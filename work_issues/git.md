@@ -1,4 +1,4 @@
-初始化git账号
+### 初始化git账号
 
 ```git
 git config --global user.email "yummys47@163.com""
