@@ -13,3 +13,9 @@ git checkout *
 git pull
 ```
 
+### commit 之后想重新修改说明内容
+
+```
+git commit --amend
+```
+
