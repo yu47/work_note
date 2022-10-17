@@ -59,3 +59,24 @@ qmake -v
 ```powershell
 linuxdeployqt Test -appimage
 ```
+
+忽略新版本
+
+```powershell
+linuxdeployqt Test -appimage -unsupported-allow-new-glibc
+linuxdeployqt Test -appimage -unsupported-bundle-everything
+```
+
+
+
+### QT中QString 转 unsigned char*
+
+    QString hideFilePaths = "test";
+    unsigned char* buf = (unsigned char*)hideFilePaths.toLatin1().data();
+### QT中QString 转 char*
+
+```
+QString hideFilePaths = "test";
+char* buf = (char*)hideFilePaths.toStdString().c_str();
+```
+

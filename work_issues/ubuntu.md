@@ -46,3 +46,12 @@ sudo mv /var/lib/dpkg/info/* /var/lib/dpkg/info.
 ##### 第六步：还原
 
 `$ sudo mv /var/lib/dpkg/info.bk /var/lib/dpkg/info` 
+
+### 创建指定大小文件
+
+```
+dd if=/dev/zero of=文件名 bs=1M count=50
+dd if=/dev/zero of=文件名 bs=1G count=20
+bs=1M表示每一次读写1M数据，count=50表示读写 50次，这样就指定了生成文件的大小为50M。bs参数还可以进一步细分为ibs和obs两种，为读操作与写操作分别指定不同的Buffer大小。
+```
+

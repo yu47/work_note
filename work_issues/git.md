@@ -1,7 +1,7 @@
 ### 初始化git账号
 
 ```git
-git config --global user.email "yummys47@163.com""
+git config --global user.email "yummys47@163.com"
 
 git config --global user.name "yu47"
 ```
@@ -17,5 +17,13 @@ git pull
 
 ```
 git commit --amend
+```
+
+### 回退版本
+
+```
+git log
+查看要回退哪个   复制head
+git reset  [HEAD] 
 ```
 
