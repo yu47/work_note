@@ -71,12 +71,32 @@ linuxdeployqt Test -appimage -unsupported-bundle-everything
 
 ### QT中QString 转 unsigned char*
 
-    QString hideFilePaths = "test";
-    unsigned char* buf = (unsigned char*)hideFilePaths.toLatin1().data();
+```C++
+QString hideFilePaths = "test";
+unsigned char* buf = (unsigned char*)hideFilePaths.toLatin1().data();
+```
 ### QT中QString 转 char*
 
-```
+```C++
 QString hideFilePaths = "test";
 char* buf = (char*)hideFilePaths.toStdString().c_str();
+```
+
+QT弹出终端
+
+```c++
+system("dbus-launch gnome-terminal --window -- bash -c './Sophie cmd 'bin/sh';exec bash'");
+//ubuntu18以上
+system("gnome-terminal --window -- bash -c './Sophie cmd 'bin/sh';exec bash'");
+```
+
+Qprocess
+
+```c++
+QProcess *p = new Qprocess(0);  
+p.start("bash", "ls");  
+p.waitForStarted();  
+p.waitForFinished();  
+qDebug()<<QString::fromLocal8Bit(p.readAllStandardOutput()); 
 ```
 
