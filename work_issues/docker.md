@@ -125,3 +125,18 @@ docker exec -it ubuntu-test bash -c "apt-get update && apt-get install vim"
 ```
 docker cp  本机路径 820c89300dd2:容器路径
 ```
+
+##### 七、映射端口
+
+```
+# 随机映射端口
+docker run -it -P 容器ID/容器NAMES /bin/bash
+# 指定端口映射
+docker run -it -p 127.0.0.1:80:8080 容器ID/容器NAMES /bin/bash
+```
+
+- #### 停止容器
+
+  ```
+  docker stop 容器ID/容器NAMES
+  ```
