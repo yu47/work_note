@@ -9,7 +9,8 @@ git config --global user.name "yu47"
 ### 合并冲突放弃本地代码，拉取服务最新代码
 
 ```
-git checkout *
+git status
+git checkout * 或者 git checkout .
 git pull
 ```
 

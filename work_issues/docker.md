@@ -114,6 +114,13 @@ sudo apt purge docker-ce
 sudo apt autoremove
 ```
 
+- ###### 自定义容器名称
+
+  ```
+  # --name 后面写一个名字，会在后台看到一个容器NAMES的名字是自己创建的
+  docker run -it -d --name my_start_docker 镜像ID /bin/bash
+  ```
+
 ### 五、安装库
 
 ```
@@ -124,6 +131,8 @@ docker exec -it ubuntu-test bash -c "apt-get update && apt-get install vim"
 
 ```
 docker cp  本机路径 820c89300dd2:容器路径
+路径对换，docker 向本机传输文件
+docker cp  820c89300dd2:容器路径  本机路径 
 ```
 
 ##### 七、映射端口
@@ -140,3 +149,4 @@ docker run -it -p 127.0.0.1:80:8080 容器ID/容器NAMES /bin/bash
   ```
   docker stop 容器ID/容器NAMES
   ```
+
