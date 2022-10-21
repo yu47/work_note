@@ -14,6 +14,18 @@ git checkout * 或者 git checkout .
 git pull
 ```
 
+### 合并冲突保留本地代码，先拉取服务最新代码，然后push
+
+```
+git add .
+git stash
+git pull
+git stash pop
+
+```
+
+
+
 ### commit 之后想重新修改说明内容
 
 ```

@@ -1,4 +1,4 @@
-### QT编译出现 not found libxkbcommon-x11 
+#### QT编译出现 not found libxkbcommon-x11 
 
 ```
 sudo apt-get install xcb libxcb-xkb-dev x11-xkb-utils libx11-xcb-dev libxkbcommon-x11-dev libxkbcommon-dev
@@ -64,6 +64,7 @@ linuxdeployqt Test -appimage
 
 ```powershell
 linuxdeployqt Test -appimage -unsupported-allow-new-glibc
+
 linuxdeployqt Test -appimage -unsupported-bundle-everything
 ```
 
@@ -98,5 +99,64 @@ p.start("bash", "ls");
 p.waitForStarted();  
 p.waitForFinished();  
 qDebug()<<QString::fromLocal8Bit(p.readAllStandardOutput()); 
+```
+
+### 文件操作
+
+```C++
+   	QFile configFile(configFilePath);//文件路径
+    if(configFile.open(QIODevice::ReadOnly|QIODevice::Text)){//只读打开
+        QByteArray data = configFile.readAll();
+        data.replace("[General]","");
+        configFile.close();
+        configFile.open(QIODevice::WriteOnly|QIODevice::Text);//只写打开
+        configFile.write(data);
+    }
+```
+
+| QIODevice::ReadOnly  | 只能对文件进行读操作                                         |
+| -------------------- | ------------------------------------------------------------ |
+| QIODevice::WriteOnly | 只能对文件进行写操作，如果目标文件不存在，会自行创建一个新文件。 |
+| QIODevice::ReadWrite | 等价于 ReadOnly \| WriteOnly，能对文件进行读和写操作。       |
+| QIODevice::Append    | 以追加模式打开文件，写入的数据会追加到文件的末尾（文件原有的内容保留）。 |
+| QIODevice::Truncate  | 以重写模式打开，写入的数据会将原有数据全部清除。注意，此打开方式不能单独使用，通常会和 ReadOnly 或 WriteOnly 搭配。 |
+| QIODevice::Text      | 读取文件时，会将行尾结束符（Unix 系统中是 "\n"，Windows 系统中是 "\r\n"）转换成‘\n’；将数据写入文件时，会将行尾结束符转换成本地格式，例如 Win32 平台上是‘\r\n’。 |
+
+| qint64 QFile::size() const                                | 获取当前文件的大小。对于打开的文件，该方法返回文件中可以读取的字节数。 |
+| --------------------------------------------------------- | ------------------------------------------------------------ |
+| bool QIODevice::getChar(char *c)                          | 从文件中读取一个字符，并存储到 c 中。读取成功时，方法返回 true，否则返回 false。 |
+| bool QIODevice::putChar(char c)                           | 向文件中写入字符 c，成功时返回 true，否则返回 false。        |
+| QByteArray QIODevice::read(qint64 maxSize)                | 从文件中一次性最多读取 maxSize 个字节，然后返回读取到的字节。 |
+| qint64 QIODevice::read(char *data, qint64 maxSize)        | 从文件中一次性对多读取 maxSize 个字节，读取到的字节存储到 data 指针指定的内存控件中。该方法返回成功读取到的字节数。 |
+| QByteArray QIODevice::readAll()                           | 读取文件中所有的数据。                                       |
+| qint64 QIODevice::readLine(char *data, qint64 maxSize)    | 每次从文件中读取一行数据或者读取最多 maxSize-1 个字节，存储到 data 中。该方法返回实际读取到的字节数。 |
+| qint64 QIODevice::write(const char *data, qint64 maxSize) | 向 data 数据一次性最多写入 maxSize 个字节，该方法返回实际写入的字节数。 |
+| qint64 QIODevice::write(const char *data)                 | 将 data 数据写入文件，该方法返回实际写入的字节数。           |
+| qint64 QIODevice::write(const QByteArray &byteArray)      | 将 byteArray 数组中存储的字节写入文件，返回实际写入的字节数。 |
+| bool QFile::copy(const QString &newName)                  | 将当前文件的内容拷贝到名为 newName 的文件中，如果成功，方法返回 true，否则返回 false。  copy 方法在执行复制操作之前，会关闭源文件。 |
+| bool QFile::rename(const QString &newName)                | 对当前文件进行重命名，新名称为 newName，成功返回 true，失败返回 false。 |
+| bool QFile::remove()                                      | 删除当前文件，成功返回 true，失败返回 false。                |
+
+### QT 开发文件浏览器
+
+```C++
+QString localDirPath = QFileDialog::getExistingDirectory();
+QFileDialog.getExistingDirectory()//打开文件夹
+QFileDialog.getOpenFileName()    //获取一个打开文件的文件名
+QFileDialog.getOpenFileNames()   //获取多个打开文件的文件名
+QFileDialog.getOpenFileUrl()     //获取一个打开文件的统一资源定位符
+QFileDialog.getOpenFileUrls()    //获取多个打开文件的统一资源定位符
+QFileDialog.getSaveFileName()    //获取保存的文件名
+QFileDialog.getSaveFileUrl()     //获取保存的url
+```
+
+
+
+### 随机数
+
+```C++
+int AUTH = QRandomGenerator::global()->bounded(268435456,929496729) //随机数
+//转化16进制
+QString AUTH= QString::number(QRandomGenerator::global()->bounded(268435456,929496729),16);
 ```
 
