@@ -155,8 +155,17 @@ QFileDialog.getSaveFileUrl()     //获取保存的url
 ### 随机数
 
 ```C++
+头文件#include <QRandomGenerator>
 int AUTH = QRandomGenerator::global()->bounded(268435456,929496729) //随机数
 //转化16进制
 QString AUTH= QString::number(QRandomGenerator::global()->bounded(268435456,929496729),16);
+```
+
+### 树组件tablewidget拖拽
+
+```
+void dropEvent(QDropEvent *event) override;
+重写dropEvent函数
+写出对应操作
 ```
 
