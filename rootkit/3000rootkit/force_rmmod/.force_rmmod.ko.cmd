@@ -1,0 +1,1 @@
+cmd_/home/yu/work/force_rmmod/force_rmmod.ko := ld -r -m elf_x86_64  -z max-page-size=0x200000  --build-id  -T ./scripts/module-common.lds -o /home/yu/work/force_rmmod/force_rmmod.ko /home/yu/work/force_rmmod/force_rmmod.o /home/yu/work/force_rmmod/force_rmmod.mod.o;  true
