@@ -1,0 +1,1 @@
+cmd_/home/yu/work/3000rootkit/3000rootkit.ko := ld -r -m elf_x86_64  -z max-page-size=0x200000  --build-id  -T ./scripts/module-common.lds -o /home/yu/work/3000rootkit/3000rootkit.ko /home/yu/work/3000rootkit/3000rootkit.o /home/yu/work/3000rootkit/3000rootkit.mod.o;  true
