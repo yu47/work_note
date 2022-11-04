@@ -169,3 +169,11 @@ void dropEvent(QDropEvent *event) override;
 写出对应操作
 ```
 
+### 分割数据split()
+
+```
+QString test = "11111111/22222/3333";
+QStringList list = test.split("/")
+int num = list.count()
+```
+
