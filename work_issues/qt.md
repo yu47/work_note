@@ -177,3 +177,39 @@ QStringList list = test.split("/")
 int num = list.count()
 ```
 
+### QtableWidget 排序的时候 ，改变数据要
+
+```
+ui->filesOperHistoryTableWidget->setSortingEnabled(false);
+```
+
+QT表格
+
+```c++
+表头
+typedef enum _SsANOCol {
+    SsANOResultRecordColNumNetid,
+} SsANOCol;
+
+内容
+typedef struct _SsANOResultRecord { 
+    QString netid;
+} SsANOResultRecord, *PSsANOResultRecord;
+
+内容填充
+int row = ui->TableWidget->rowCount();
+ui->TableWidget->insertRow(row);
+QTableWidgetItem *SsnetidItem = new QTableWidgetItem("111111111");
+SsnetidItem->setTextAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+ui->netstatTableWidget_2->setItem(row, SsANOResultRecordColNumNetid, SsnetidItem);
+```
+
+### 时间
+
+```C++
+	QDateTime current_date_time = QDateTime::currentDateTime();
+    QString current_date = current_date_time.toString("yyyy-MM-dd hh:mm:ss ddd");
+    QString message = text.append(msg).append("(").append(current_date).append(")");
+
+```
+
