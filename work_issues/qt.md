@@ -2,6 +2,7 @@
 
 ```
 sudo apt-get install xcb libxcb-xkb-dev x11-xkb-utils libx11-xcb-dev libxkbcommon-x11-dev libxkbcommon-dev
+出现 readline未找到， libreadline-dev
 ```
 
 QT在linux下，用Linuxdeployqt打包程序
@@ -81,6 +82,13 @@ unsigned char* buf = (unsigned char*)hideFilePaths.toLatin1().data();
 ```C++
 QString hideFilePaths = "test";
 char* buf = (char*)hideFilePaths.toStdString().c_str();
+```
+
+### QT中unsigned char * 转 QString
+
+```
+unsigned char *buf = "test";
+QString(QLatin1String((char*)buf));
 ```
 
 QT弹出终端
@@ -207,9 +215,30 @@ ui->netstatTableWidget_2->setItem(row, SsANOResultRecordColNumNetid, SsnetidItem
 ### 时间
 
 ```C++
-	QDateTime current_date_time = QDateTime::currentDateTime();
+    QDateTime current_date_time = QDateTime::currentDateTime();
     QString current_date = current_date_time.toString("yyyy-MM-dd hh:mm:ss ddd");
     QString message = text.append(msg).append("(").append(current_date).append(")");
+
+```
+
+### 表格最后一列扩充
+
+```
+ //设置行列均分
+tableWidget->horizontalHeader()->setStretchLastSection(true); //就是这个地方
+ tableWidget->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+ //使行列头自适应宽度，最后一列将会填充空白部分
+table->horizontalHeader()->setStretchLastSection(true);          
+
+//使行列头自适应宽度，所有列平均分来填充空白部分            
+table->horizontalHeader()->setResizeMode(QHeaderView::Strtch);       
+
+//使行自适应高度，假如行很多的话，行的高度不会一直减小，当达到一定值时会自动生成一个QScrollBar
+table->verticalHeader()->setResizeMode(QHeaderView::Strtch);
+
+//隐藏左边的序号
+QHeaderView* headerView = table的名字->verticalHeader();
+      headerView->setHidden(true);
 
 ```
 
