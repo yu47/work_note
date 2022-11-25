@@ -55,3 +55,15 @@ dd if=/dev/zero of=文件名 bs=1G count=20
 bs=1M表示每一次读写1M数据，count=50表示读写 50次，这样就指定了生成文件的大小为50M。bs参数还可以进一步细分为ibs和obs两种，为读操作与写操作分别指定不同的Buffer大小。
 ```
 
+网络没有wired 无法配置
+
+```
+sudo service network-manager stop
+sudo rm /var/lib/NetworkManager/NetworkManager.state
+sudo service network-manager start
+sudo gedit /etc/NetworkManager/NetworkManager.conf
+把false改成true
+sudo service network-manager restart
+
+```
+
