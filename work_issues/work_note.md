@@ -11,6 +11,10 @@
 		修改配置：/etc/squid/suqid.conf
 		重启squid: systemctl restart squid
 		查看日志: tail -f /var/log/squid/access.log
+		启动：service squid start   #最安全做法
+		启动：/usr/sbin/squid -s  #后台启动,有可能不生效
+		停止：squid -k shutdown
+		重启配置：systemctl reload squid
 	* 工作流程：
 		* 1 客户端与代理建立TCP连接（三次握手）
 		* 2 客户端给服务端发送请求；
@@ -67,5 +71,96 @@ cd /etc/opt/ss5/
 	chmod +x /etc/rc.d/rc.local ;\
 	/sbin/chkconfig ss5 on
 
+```
+
+### openSSL编译和使用
+
+		* 下载openssl源代码
+		* 网站：https://www.openssl.org/source/old/
+		* 解压，进入openssl目录
+		* ./config -fPIC no-shared
+		* 其中，-fPIC：指示生成位置无关的代码，这个选项是在把openssl生成的静态库链接到动态库的时候提示错误添加的；no-shared：指示生成静态库。
+		* 动态库 ./config -fPIC shared
+		* make
+		* 完成静态编译
+		*  最终在当前目录下会编译出libssl.a和libcrypto.a两个库文件
+		*  将include/openssl目录拷贝到自己模块的头文件目录（./inc）下，将libssl.a和libcrypto.a静态库拷贝到自己模块的库文件目录（./lib）下，在makefile中添加头文件目录和lib库：
+	  INCLUDE += ******** -I./inc
+	  LIB += ******* -L./lib -lssl -lcrypto
+linux 查询程序依赖
+
+	* objdump -p shell
+	* ldd shell
+	* readelf -s shell 
+冰点 5f6Dq2YB
+
+### Vscode root权限调试
+
+```
+root.sh 内容 pkexec /usr/bin/gdb "$@"
+
+-----------------------------------------------------------------------------------------------------
+launch.json 内容
+{
+    "version": "0.2.0",
+    "configurations": [
+     {
+        "name": "shell",
+        "type": "cppdbg",
+        "request": "launch",
+        "program": "/home/yu/work/foxdoor-base/userland/output/shell",
+        "args": [
+            "-t", "192.168.182.128", "-s", "s3cr3t", "-p", "443", "-r", "1",
+
+        ],
+        "stopAtEntry": false,
+        "cwd": "/home/yu/work/foxdoor-base/userland/output",
+        "environment": [],
+        "externalConsole": false,
+        "MIMode": "gdb",
+        "miDebuggerPath": "/home/yu/work/foxdoor-base/root.sh", //root状态调试
+        "setupCommands": [
+            {
+                "description": "为 gdb 启用整齐打印",
+                "text": "-enable-pretty-printing",
+                "ignoreFailures": true
+            },
+            {
+                "description":  "将反汇编风格设置为 Intel",
+                "text": "-gdb-set disassembly-flavor intel",
+                "ignoreFailures": true
+            }
+        ],
+        "preLaunchTask": "build"
+     }
+    ]
+}
+
+-----------------------------------------------------------------------------------------------------
+tasks.json   内容
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "cppbuild",
+			"label": "build",
+			"command": "make",
+			"args": [
+				"${fileBasenameNoExtension}"
+			],
+			"options": {
+				"cwd": "/home/yu/work/foxdoor-base/userland"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+			"detail": "调试器生成的任务。"
+		}
+	]
+}
 ```
 

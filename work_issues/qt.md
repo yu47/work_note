@@ -242,3 +242,13 @@ QHeaderView* headerView = table的名字->verticalHeader();
 
 ```
 
+### 添加右键菜单
+
+```C++
+ui->netstatTableWidget->setContextMenuPolicy(Qt::CustomContextMenu);;
+m_networkMenu = new QMenu(ui->netstatTableWidget);
+    QAction *actHideaddress = new QAction(MENU_HIDE, this); 口
+    m_networkMenu->addAction(actHideaddress);
+    connect(actHideaddress, SIGNAL(triggered(bool)), this, SLOT(on_hideButton_clicked()));
+connect(ui->netstatTableWidget, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(slot_show_tabMenu(QPoint)));
+```
