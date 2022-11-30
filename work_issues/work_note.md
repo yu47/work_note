@@ -164,3 +164,82 @@ tasks.json   内容
 }
 ```
 
+### makeself
+
+```
+# 下载工具
+wget https://github.com/megastep/makeself/releases/download/release-2.4.2/makeself-2.4.2.run
+
+# 解压安装
+bash makeself-2.4.2.run; cd makeself-2.4.2
+sudo cp makeself.sh /usr/bin/makeself
+
+#打包
+makeself.sh [args] archive_dir file_name label startup_script [script_args]
+运行脚本  [可选参数] 目标sh所在目录  打包完可执行文件名  sh文件（相对于archive_dir的路径） sh可选参数
+```
+
+
+
+- **[1] makeself 打包命令可选参数**
+
+| 参数                        | 参数使用说明                                                 |
+| :-------------------------- | :----------------------------------------------------------- |
+| **`--version`**             | 打印版本号                                                   |
+| **`--needroot`**            | 需要`root`用户才可以执行                                     |
+| **`--gzip`**                | 默认使用`gzip`工具进行压缩                                   |
+| **`--pigz`**                | `gzip`的多线程解决方案                                       |
+| **`--bzip2`**               | 使用`bzip2`代替`gzip`进行更好的压缩                          |
+| **`--pbzip2`**              | `bzip2`的多线程解决方案                                      |
+| **`--xz`**                  | 使用`xz`代替`gzip`进行更好的压缩(远程支持多线程压缩)         |
+| **`--zstd`**                | 使用`zstd`代替`gzip`进行更好的压缩                           |
+| **`--threads thds`**        | 限制支持多线程解压缩工具所使用的线程数量                     |
+| **`--base64`**              | 用`Base64`格式将存档编码为`ASCII`格式而不进行压缩            |
+| **`--gpg-encrypt`**         | 使用`gpg -ac -z $COMPRESS_LEVEL`加密归档文件，需要输入密码   |
+| **`--ssl-encrypt`**         | 使用`openssl aes-256-cbc -a -salt`加密归档文件，需要输入密码 |
+| **`--ssl-passwd pass`**     | 设置`openssl`加密归档文件需要输入的密码                      |
+| **`--compress`**            | 使用`UNIX系统的`compress`命令压缩数据(在没有 gzip 时默认)    |
+| **`--nocomp`**              | 不对存档文件进行压缩，默认是一个`tar`包                      |
+| **`--complevel lvl`**       | 指定压缩级别，默认使用`9`级别                                |
+| **`--notemp`**              | 生成的归档文件不会将文件解压缩到临时目录，而解压到当前目录的创建的新目录中 |
+| **`--current`**             | 文件将被提取到当前目录，而不是子目录中(同`--notemp`一样，但会提取没有文件夹) |
+| **`--follow`**              | 存储指向的文件而不是链接本身                                 |
+| **`--append file`**         | 将数据追加到现有存档中，而不是创建新文件                     |
+| **`--header file`**         | 使用指定的脚本来代替默认的`makeself-header.sh`文件(默认与`makeself`文件同级) |
+| **`--cleanup file`**        | 指定在执行中断或成功完成时运行的脚本                         |
+| **`--nomd5/--nocrc`**       | 禁止检查存档文件的`MD5`或`CRC`校验和                         |
+| **`--tar-extra opt`**       | 在`tar`命令行中附加更多选项                                  |
+| **`--keep-umask`**          | 保持`umask`设置为`shell`默认值，而不是在执行自解压缩存档时覆盖 |
+| **`--packaging-date date`** | 使用提供的字符串作为打包日期而不是当前日期                   |
+| **`--license`**             | 附加许可证文件                                               |
+| **`--nooverwrite`**         | 如果指定的目标目录已经存在则不要解压缩存档                   |
+| **`--header file`**         | 指定头部信息脚本文件的位置，默认为`makeself-header.sh`文件   |
+| **`--help-header file`**    | 在存档的`--help`输出中添加标题                               |
+| **`--export-conf`**         | 将配置变量导出到`startup_script`脚本中                       |
+
+- **[2] ARGS - 需要注意的选项**
+
+| 选项                 | 说明                                         |
+| :------------------- | :------------------------------------------- |
+| **`archive_dir`**    | 包含要归档的文件的目录的名称                 |
+| **`file_name`**      | 要创建的存档名称                             |
+| **`label`**          | 描述存档包的任意描述并在解压的时候显示       |
+| **`startup_script`** | 解压后要执行的脚本，需指定`./`在当前目录执行 |
+| **`[script_args]`**  | `startup_script`脚本的附加参数               |
+
+- **[3] ARGS - 解包的可选参数**
+
+| 参数                   | 参数使用说明                                                 |
+| :--------------------- | :----------------------------------------------------------- |
+| **`--keep`**           | 文件将被提取到当前工作目录中并将一直保留到您删除它们为止     |
+| **`--verbose`**        | 在执行嵌入式脚本之前将提示用户                               |
+| **`--target dir`**     | 允许在任意指定目录解压`run`包                                |
+| **`--confirm`**        | 在执行嵌入式脚本之前将提示用户是否需要执行                   |
+| **`--info`**           | 打印出有关`run`包的常规信息                                  |
+| **`--list`**           | 列出档案中的文件                                             |
+| **`--check`**          | 校验和检查归档文件的完整性                                   |
+| **`--nochown`**        | 默认情况下提取后在目标目录上运行`chown -R`命令以便所有文件都属于当前用户 |
+| **`--tar`**            | 使用以下参数作为`tar`命令的参数                              |
+| **`--noexec`**         | 提取后不要运行嵌入式脚本                                     |
+| **`--nodiskspace`**    | 在提取之前不检查可用的磁盘空间                               |
+| **`--noexec-cleanup`** | 在提取之前不支持指定的删除脚本                               |
