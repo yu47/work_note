@@ -252,3 +252,10 @@ m_networkMenu = new QMenu(ui->netstatTableWidget);
     connect(actHideaddress, SIGNAL(triggered(bool)), this, SLOT(on_hideButton_clicked()));
 connect(ui->netstatTableWidget, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(slot_show_tabMenu(QPoint)));
 ```
+
+qt 当前路径
+
+```
+QString absPath = qApp->applicationDirPath();
+```
+
