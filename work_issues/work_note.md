@@ -243,3 +243,35 @@ makeself.sh [args] archive_dir file_name label startup_script [script_args]
 | **`--noexec`**         | 提取后不要运行嵌入式脚本                                     |
 | **`--nodiskspace`**    | 在提取之前不检查可用的磁盘空间                               |
 | **`--noexec-cleanup`** | 在提取之前不支持指定的删除脚本                               |
+
+### 利用管道文件实现不同进程通信
+
+```
+send.c
+	#define FIFO_STOC "./fifo_StoC"
+    if (access(FIFO_CTOS, F_OK) == -1) {
+        res = mkfifo(FIFO_CTOS, 0777);
+        if (res != 0) {
+            fprintf(stderr, "Could not create fifo %s\n", FIFO_CTOS);
+            exit(EXIT_FAILURE);
+        }
+    }
+    
+    res = write(pipe_fd_StoC, message, strlen(message));
+    if (res == -1) {
+        fprintf(stderr, "Write error on pipe\n");
+        exit(EXIT_FAILURE);
+    }
+recv.c
+	#define FIFO_STOC "./fifo_StoC"
+	int pipe_fd_StoC = open(FIFO_STOC, O_RDONLY);
+	res = read(pipe_fd_StoC, buffer, BUFFER_SIZE);
+```
+
+realloc 函数
+
+if ((buffer = realloc(buffer, res_len + len)) == NULL))
+
+如果buffer内存大小比res_len + len 大  则不重新分配
+
+否则复制原本的到新的内存，申请新的内存。
