@@ -268,10 +268,105 @@ recv.c
 	res = read(pipe_fd_StoC, buffer, BUFFER_SIZE);
 ```
 
-realloc 函数
+### realloc 函数
 
 if ((buffer = realloc(buffer, res_len + len)) == NULL))
 
 如果buffer内存大小比res_len + len 大  则不重新分配
 
 否则复制原本的到新的内存，申请新的内存。
+
+### wolfssl 编译
+
+```
+./configure --prefix=$(pwd)/output --enable-static=yes --enable-aesgcm=yes
+```
+
+缺少.so
+
+ libmbedtls.so.19: cannot open shared object file: No such file or directory
+
+```
+echo "/usr/local/lib" >> /etc/ld.so.conf
+root@ubuntu:/home/yu/work# ldconfig
+
+```
+
+编译Mbedtls
+
+```
+cmake -DUSE_SHARED_MBEDTLS_LIBRARY=TRUE .
+make
+make install
+```
+
+### 搭建putty
+
+![putty-session](../\images\putty-session.png)
+
+
+
+![putty-session](../\images\putty-session.png)
+
+
+
+将yu机器接收到的4444端口 转发到192.168.8.130：443 端口
+
+
+
+### 版本号
+
+```
+Linux localhost 3.2.0-67-generic #101-Ubuntu SMP Tue Jul 15 17:46:11 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux
+```
+
+```
+第一个组数字：3,主版本号
+第二个组数字：2,次版本号，当前为稳定版本
+第三个组数字：0,修订版本号
+第四个组数字：67，当前内核版本（3.2.0）的第67次微调patch
+generic：当前内核版本为通用版本，另有表示不同含义的server（针对服务器）、i386（针对老式英特尔处理器）
+pae（PhysicalAddressExtension）：物理地址扩展，为了弥补32位地址在PC服务器应用上的不足而推出，表示此32位系统可以支持超过4G的内存
+x86_64：采用的是64位的CPU
+SMP：对称多处理机，表示内核支持多核、多处理器
+TueJul1517:46:11UTC2014：内核的编译时间（builddate）为2014/07/1517:46:11
+```
+
+### linux扩容
+
+```
+先用指令 df -h 查看磁盘情况。
+vgdisplay
+```
+
+![Snipaste_2023-01-09_17-07-01](E:../\images\Snipaste_2023-01-09_17-07-01.png)
+
+```
+lvextend -L +1G /dev/mapper/ubuntu 表示加1G到/dev/mapper/ubuntu
+lvextend -L 100G /dev/mapper/ubuntu 表示扩大到100G /dev/mapper/ubuntu
+```
+
+###  ubuntu 加入环境变量
+
+```
+export PATH=/home/fuller/Qt5.9.0/Tools/QtCreator/bin:$PATH
+```
+
+
+
+```
+./shell -t 192.168.8.130 -p 443 -s s3cr3t -r 1
+```
+
+更新镜像源
+
+```
+cat > /etc/apt/sources.list <<EOF
+deb http://mirrors.aliyun.com/ubuntu/ focal main restricted universe multiverse
+deb http://mirrors.aliyun.com/ubuntu/ focal-security main restricted universe multiverse
+deb http://mirrors.aliyun.com/ubuntu/ focal-updates main restricted universe multiverse
+deb http://mirrors.aliyun.com/ubuntu/ focal-backports main restricted universe multiverse
+
+EOF
+```
+
