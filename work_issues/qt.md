@@ -260,3 +260,11 @@ QString absPath = qApp->applicationDirPath();
 ```
 
 qt QtConcurrent::run([=] () {}
+
+以root启动
+
+    if(!geteuid() == 0)
+        {
+            QMessageBox::information(this, "错误", "请使用root用户启动。");
+            exit(0);
+        }
