@@ -162,6 +162,8 @@ tasks.json   内容
 		}
 	]
 }
+
+优化调试：-O1
 ```
 
 ### makeself
@@ -344,6 +346,7 @@ vgdisplay
 ```
 lvextend -L +1G /dev/mapper/ubuntu 表示加1G到/dev/mapper/ubuntu
 lvextend -L 100G /dev/mapper/ubuntu 表示扩大到100G /dev/mapper/ubuntu
+resize2fs /dev/mapper/ubuntu 使用resize2fs指令来增大或者收缩未加载的“ext2/ext3”文件系统的大小
 ```
 
 ###  ubuntu 加入环境变量
@@ -368,5 +371,20 @@ deb http://mirrors.aliyun.com/ubuntu/ focal-updates main restricted universe mul
 deb http://mirrors.aliyun.com/ubuntu/ focal-backports main restricted universe multiverse
 
 EOF
+```
+
+### 获取系统代理信息
+
+```
+gsettings get org.gnome.system.proxy mode //返回代理模式
+gsettings list-recursively org.gnome.system.proxy  //返回具体代理信息
+```
+
+### 查看本机的出口公网IP信息：
+
+```
+curl ifconfig.me
+or
+curl cip.cc
 ```
 

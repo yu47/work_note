@@ -38,3 +38,12 @@ git log
 git reset  [HEAD] 
 ```
 
+ 取消commit
+
+```
+git reset --soft HEAD~1 
+回到上一次commit前
+git reset --soft HEAD~2
+回到上上次commit前
+```
+
