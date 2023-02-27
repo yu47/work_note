@@ -2,6 +2,8 @@
 
 C 库函数 **char \*strrchr(const char \*str, int c)** 在参数 **str** 所指向的字符串中搜索最后一次出现字符 **c**（一个无符号字符）的位置。
 
+
+
 ```
 temp = strrchr(args[1], '/'); 
 ```
@@ -37,7 +39,7 @@ void bzero(void *s, int n);
 
 字符串数字 转化为 int
 
-oiat
+### oiat
 
 int 转 char
 
@@ -45,6 +47,33 @@ int 转 char
 
 ```
 分解字符串： strtok(NULL, delim)
+#include <string.h>
+#include <stdio.h>
+ 
+int main () {
+   char str[80] = "This is - www.runoob.com - website";
+   const char s[2] = "-";
+   char *token;
+   
+   /* 获取第一个子字符串 */
+   token = strtok(str, s);
+   
+   /* 继续获取其他的子字符串 */
+   while( token != NULL ) {
+      printf( "%s\n", token );
+    
+      token = strtok(NULL, s);
+   }
+   printf("\n%s\n",str);
+   return(0);
+}
+输出：
+
+This is 
+ www.runoob.com 
+ website
+
+This is 
 ```
 
 getopt()函数用于解析命令行参数。
@@ -110,7 +139,7 @@ sprintf(_size, "%d", local_size);//整数转化为字符串
 ```
 lseek(fd,0,SEEK_SET); 光标移动到看开头
 lseek(fd,0,SEEK_END); 光标移动到看结尾
-lseek(fd,0,SEEK_CUD); 光标移动到看根据当前光标前移
+lseek(fd,pos,SEEK_CUD); 光标移动到看根据当前光标前移
 ```
 
 ### fork调试子线程 ：  -exec set follow-fork-mode child
@@ -292,5 +321,208 @@ RTLD_DEEPBIND：在搜索全局符号前先搜索库内的符号，避免同名�
 sudo apt install valgrind
 valgrind --tool=memcheck --leak-check=full --show-reachable=yes 后接程序
 程序编译时 加-g  调试状态
+```
+
+### strtok
+
+分割字符串，比如“a-b-c-d”  按“-”分割后 结果 a b c d
+
+```
+    int bufsize = 64
+    char **tokens = malloc(bufsize * sizeof(char *));
+    token = strtok("a-b-c-d", "-");
+    while (token != NULL) {
+        tokens[position] = token;
+        position++;
+
+        if (position >= bufsize) {
+            bufsize += TOK_BUFSIZE;
+            tokens_backup = tokens;
+            tokens = realloc(tokens, bufsize * sizeof(char *));
+            if (!tokens) {
+                free(tokens_backup);
+                fprintf(stderr, "my_parse: allocation error\n");
+                return -1;
+            }
+        }
+        token = strtok(NULL, TOK_DELIM);
+    }
+    tokens // a b c d
+```
+
+### 消息队列
+
+1. #### msg
+
+   不支持select  IO多路复用
+
+   ```
+   //头文件
+   #include <sys/msg.h>
+   #include <stdio.h>
+   #include <stdlib.h>
+   #include <string.h>
+   #include <sys/msg.h>
+   #include <errno.h>
+   #include <sys/select.h>
+   #include <unistd.h>
+   
+   
+   //结构体
+   struct msg_st
+   {
+       long int msg_type; //key_t id
+       char text[MAX_TEXT]; // 队列消息
+   };
+   
+   //建立消息队列
+   msgid = msgget((key_t)11, 0666 | IPC_CREAT);
+   if (msgid == -1)
+   {
+   fprintf(stderr, "msgget failed error: %d\n", errno);
+   exit(EXIT_FAILURE);
+   }
+   
+   data.msg_type = 1; 
+   strcpy(data.text, buffer);
+   
+   // 向队列里发送数据
+   if (msgsnd(msgid, (void *)&data, BUFSIZE, 0) == -1)
+   {
+   fprintf(stderr, "msgsnd failed\n");
+   exit(EXIT_FAILURE);
+   }
+   
+   //从队列里取出消息
+   if (msgrcv(msgid, (void *)&data, BUFSIZE, 0, 0) == -1)
+   {
+   fprintf(stderr, "msgrcv failed width erro: %d", errno);
+   }
+   ```
+
+   2. #### POSIX 消息队列
+
+      支持select
+
+      注意：gcc 需要加-lrt 库
+
+      ```
+      //SERVER.c
+      #include <stdio.h>
+      #include <stdlib.h>
+      #include <mqueue.h>
+      #include <sys/select.h>
+      #define QUEUE_NAME  "/my_queue" //路径名字可以任意
+      #define MAX_MSG_SIZE 4096
+      
+      int main(void) {
+          mqd_t mq;  //接收返回消息队列描述符
+          fd_set rd; //select 使用的描述符集合
+          char buf[MAX_MSG_SIZE + 1];
+          int prio;  //消息队列 优先级
+          struct mq_attr attr;  //mq的属性
+      
+          attr.mq_flags = 0; 
+          attr.mq_maxmsg = 10; //最大消息数
+          attr.mq_msgsize = MAX_MSG_SIZE;  //消息的最大长度
+          attr.mq_curmsgs = 0; //当前排队的消息数
+      
+          mq = mq_open(QUEUE_NAME, O_RDONLY | O_CREAT, 0644, &attr);
+          if (mq == (mqd_t)-1) {
+              perror("mq_open");
+              exit(EXIT_FAILURE);
+          }
+      
+          ssize_t bytes_read; //接收消息的长度
+          while (1) {
+              FD_ZERO(&rd);
+              FD_SET(mq, &rd);
+              if (select(mq + 1, &rd, NULL, NULL, NULL) < 0){ //会在这里阻塞，如果mq有读写消息，则读取
+                  perror("select");
+              }
+              if(FD_ISSET(mq, &rd)){
+                  if((bytes_read = mq_receive(mq, buf, 1, &prio)) > 0){
+                      buf[bytes_read] = '\0'; //添加结束符
+                      printf("Received message '%s' with priority %d %d\n", buf, prio, bytes_read);
+                  }
+              }
+          }
+      
+          if (bytes_read == -1) {
+              perror("mq_receive");
+              exit(EXIT_FAILURE);
+          }
+      	mq_unlink(mq); //清空消息队列
+          mq_close(mq);
+          return 0;
+      }
+      ```
+
+      ```
+      // client.c
+      #include <stdio.h>
+      #include <stdlib.h>
+      #include <mqueue.h>
+      
+      #define QUEUE_NAME  "/my_queue"
+      #define MAX_MSG_SIZE 4096
+      
+      int main(void) {
+          mqd_t mq;
+          char msg[MAX_MSG_SIZE];
+          unsigned int prio = 1;
+      
+          mq = mq_open(QUEUE_NAME, O_WRONLY);
+          if (mq == (mqd_t)-1) {
+              perror("mq_open");
+              exit(EXIT_FAILURE);
+          }
+          snprintf(msg, MAX_MSG_SIZE, "Hello%d", getpid());
+          if (mq_send(mq, msg, strlen(msg), prio) == -1) {
+              perror("mq_send");
+              exit(EXIT_FAILURE);
+          }
+      
+      	mq_unlink(mq); //清空消息队列
+          mq_close(mq);
+          return 0;
+      }
+      
+      ```
+
+
+### 键盘记录
+
+读取/dev/input/event 文件
+
+```
+
+```
+
+### 忽略broken pipe Signals信号
+
+```
+void sighandler()
+{
+	....
+}
+signal(SIGPIPE, sighandler); //异常处理函数sighandler()
+signal(SIGPIPE, SIG_IGN	);//忽略信号
+
+```
+
+### __attribute__
+
+```
+GCC 特有的属性 "**attribute**"，以指定该函数应在主函数执行之前自动调用。
+定义了一个构造函数，在程序启动时会被调用。
+"attribute ((constructor))" 语法是特定于 GCC 编译器的，可能不受其他编译器或平台的支持。
+
+```
+
+### prctl   
+
+```
+修改进程名称    prctl(PR_SET_NAME, "myexcel", 0, 0, 0);
 ```
 

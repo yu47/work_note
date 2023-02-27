@@ -22,10 +22,25 @@
 		* 4 服务端响应代理的请求，发送响应给代理
 		* 5 代理转发给客户端
 
+
+```
+test:$apr1$RX.eQNcm$ya0Kobxcc3eY8IGAKyE.v1
+
+#http_access allow all
+#http_access deny all
+#test:123
+auth_param basic program /usr/lib64/squid/basic_ncsa_auth /etc/squid/passwd
+acl auth_user proxy_auth REQUIRED
+http_access allow auth_user
+```
+
+
+
 ### 修改IP
 
 ```
-vi /etc/sysconfig/network-scripts/ifcfg-eth0  修改ip
+vi /etc/sysconfig/network-scripts/ifcfg-eth0  修改ip 
+GATEWAY=
 vi /etc/resolv.conf  修改DNS
 /etc/init.d/network restart  重启网卡
 ```
@@ -70,7 +85,17 @@ cd /etc/opt/ss5/
 	echo 'mkdir /var/run/ss5/' >> /etc/rc.d/rc.local ;\
 	chmod +x /etc/rc.d/rc.local ;\
 	/sbin/chkconfig ss5 on
-
+* 添加用户认证：vi /etc/opt/ss5/ss5.conf
+	* 1	 默认的是：无用户认证。 
+		auth 0.0.0.0/0
+    * 2	如果想要使用用户认证，需要将上面两行修改成下面这样：
+	    auth 0.0.0.0/0 - u
+    	permit u 0.0.0.0/0 - 0.0.0.0/0 - - - - -
+    * 3	添加用户名及密码 
+	    * vi /etc/opt/ss5/ss5.passwd
+	    * 添加用户密码 每行一个用户+密码（之间用空格）
+		    test1 12345
+		    test2 56789
 ```
 
 ### openSSL编译和使用
@@ -163,7 +188,7 @@ tasks.json   内容
 	]
 }
 
-优化调试：-O1
+优化调试：-O0
 ```
 
 ### makeself
@@ -302,6 +327,114 @@ make
 make install
 ```
 
+mbedtls 连接服务器
+
+```
+// 需要的库 -lmbedtls -lmbedx509 -lmbedcrypto
+#include <mbedtls/entropy.h>
+#include <mbedtls/ctr_drbg.h>
+#include <mbedtls/error.h>
+
+int Proxy_Https_Connect(int *fd, PROXY *myProxy, char * DstIP, unsigned short DstPort)
+{
+	char buff[2048];
+    mbedtls_ssl_config conf;
+    mbedtls_entropy_context entropy;
+    mbedtls_ctr_drbg_context ctr_drbg;
+
+    const char *pers = "ssl_client1";
+    int ret;
+
+    /* Initialize entropy and CTR_DRBG contexts */
+    mbedtls_entropy_init(&entropy);
+    mbedtls_ctr_drbg_init(&ctr_drbg);
+
+    if ((ret = mbedtls_ctr_drbg_seed(&ctr_drbg, mbedtls_entropy_func, &entropy, (const unsigned char *)pers, strlen(pers))) != 0) {
+        // printf("mbedtls_ctr_drbg_seed returned %d\n", ret);
+        return -1;
+    }
+
+    /* Initialize SSL context and configure it */
+    mbedtls_ssl_init(&ssl);
+    mbedtls_ssl_config_init(&conf);
+
+    if ((ret = mbedtls_ssl_config_defaults(&conf, MBEDTLS_SSL_IS_CLIENT, MBEDTLS_SSL_TRANSPORT_STREAM, MBEDTLS_SSL_PRESET_DEFAULT)) != 0) {
+        // printf("mbedtls_ssl_config_defaults returned %d\n", ret);
+        return -1;
+    }
+
+    mbedtls_ssl_conf_rng(&conf, mbedtls_ctr_drbg_random, &ctr_drbg);
+    mbedtls_ssl_conf_authmode(&conf, MBEDTLS_SSL_VERIFY_NONE);
+    /* Initialize network connection and set server address */
+	close(*fd);  //zys 20230207
+    mbedtls_net_init(fd);
+
+	char port[10];
+    sprintf(port,"%d",myProxy->pro_port);
+    if ((ret = mbedtls_net_connect(fd, myProxy->pro_ip, port, MBEDTLS_NET_PROTO_TCP)) != 0) {
+        // printf("mbedtls_net_connect returned %d\n", ret);
+        return -1;
+    }
+
+	ret = set_keep_timeout(fd);  //zys 20230207
+	if (ret < 0) {
+		return -1;
+	}
+
+    /* Set SSL context's connection and configure it */
+    mbedtls_ssl_set_bio(&ssl, fd, mbedtls_net_send, mbedtls_net_recv, NULL);
+
+    if ((ret = mbedtls_ssl_setup(&ssl, &conf)) != 0) {
+        // printf("mbedtls_ssl_setup returned %d\n", ret);
+        return -1;
+    }
+
+    /* Perform SSL/TLS handshake */
+    if ((ret = mbedtls_ssl_handshake(&ssl)) != 0) {
+        // printf("mbedtls_ssl_handshake returned %d\n", ret);
+        return -1;
+    }
+
+    char header[512] = {0};
+    char temp[128] = {0};
+    sprintf(header, "CONNECT %s:%d HTTP/1.1\r\n",DstIP, DstPort);
+    strcat(header, "User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:79.0) Gecko/20100101 Firefox/79.0\r\n"); // need modify?
+    strcat(header, "Pragma: no-cache\r\nProxy-Connection: keep-alive\r\nConnection: keep-alive\r\n");
+    sprintf(temp, "Host: %s\r\n", DstIP);
+    strcat(header, temp);
+    memset(temp, 0, sizeof(temp));
+    strcat(header, "\r\n");
+
+	// if(strlen((char *)myProxy->username)>0)
+	// {
+	// 	char szAuth[64] ={0};
+	// 	sprintf(szAuth, "%s:%s", (char *)myProxy->username, (char *)myProxy->password);
+	// 	strcat(header, "Proxy-Authorization: Basic ");
+	// 	base64_encode(szAuth, strlen(szAuth), buff);
+	// 	strcat(header, buff);
+	// 	strcat(header, "\r\n");	
+	// }
+    
+	/* Send HTTP GET request to server */
+    if ((ret = mbedtls_ssl_write(&ssl, (const unsigned char *)header, strlen(header))) <= 0) {
+        printf("mbedtls_ssl_write returned %d\n", ret);
+        return -1;
+    }
+
+/* Read and print response from server */
+    char response[4096] = {0};
+    ret = mbedtls_ssl_read(&ssl, (unsigned char *)response, BUFSIZE);
+	if(ret < 0 ){
+		return -1;
+	}
+	// *fd = server_fd.fd;
+	return 1;
+
+}
+```
+
+
+
 ### 搭建putty
 
 ![putty-session](../\images\putty-session.png)
@@ -388,3 +521,62 @@ or
 curl cip.cc
 ```
 
+### 修改ubuntu 按键冲突
+
+```
+1、查看系统组合键占用情况
+Ctrl+Alt+Up/Down一般是被“切换工作空间”功能占用，我们通过命令分别查看一下。
+
+    a、查看switch-to-workspace-up
+    gsettings get org.gnome.desktop.wm.keybindings switch-to-workspace-up
+    返回：
+
+    ['<Super>Page_Up', '<Control><Alt>Up']
+    b、查看switch-to-workspace-down
+    gsettings get org.gnome.desktop.wm.keybindings switch-to-workspace-down
+    返回：
+
+    ['<Super>Page_Up', '<Control><Alt>Down']
+2、解除系统组合键占用
+    可以看到，有两组快捷键，我们保留前面的那一组。
+
+    gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-up "['<Super>Page_Up']"
+    gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-down "['<Super>Page_Down']"
+3、复位
+    下面的命令是对所有组合键绑定进行复位：
+
+    gsettings reset org.gnome.desktop.wm.keybindings
+    这样做未免矫枉过正，建议还是使用以下命令，只把切换工作空间的组合键恢复过来：
+
+    gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-up "['<Super>Page_Up', '<Control><Alt>Up']"
+    gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-down "['<Super>Page_Down', '<Control><Alt>Down']"
+```
+
+### 编译动态库.so
+
+```
+gcc test.c  -fPIC -shared -o libtest.so
+
+gcc 依赖库文件 -fPIC -shared -o libxxx.so
+
+libxxx.so 必须以 lib 开头 .so结尾
+
+-fPIC       作用于编译阶段，告诉编译器产生与位置无关代码(Position-Independent Code)，
+  则产生的代码中，没有绝对地址，全部使用相对地址，故而代码可以被加载器加载到内存的任意
+  位置，都可以正确的执行。这正是共享库所要求的，共享库被加载时，在内存的位置不是固定的。
+
+-shared     目的是使源码编译成动态库 .so 文件
+
+
+void __attribute__ ((constructor)) my_library_init();
+void my_library_init() {
+    // your initialization code here
+    // ...
+    // call the main function
+    my_library_main(0, NULL);
+}
+```
+
+589
+
+1374
