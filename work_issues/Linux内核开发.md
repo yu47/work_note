@@ -439,3 +439,38 @@ int main()
 链接：https://www.cnblogs.com/sctb/p/13816110.html
 
 链接：https://www.cnblogs.com/geneil/archive/2011/12/04/2275372.html
+
+### 调试测试模块  hello_world.c
+
+```
+#include <linux/module.h>
+#include <linux/kernel.h>
+#include <linux/kgdb.h>
+int init_module(void)
+{
+    printk(KERN_INFO "Hello World!\n");
+    return 0;
+}
+
+void cleanup_module(void)
+{
+	kgdb_breakpoint();
+	printk(KERN_INFO "Goodbye World!\n");
+}
+
+MODULE_LICENSE("GPL");
+MODULE_AUTHOR("Your Name");
+MODULE_DESCRIPTION("A simple hello world module");
+```
+
+### Makefile
+
+```
+obj-m += lkm_example.o
+EXTRA_CFLAGS = -g -O0
+all:
+	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules
+clean:
+	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) clean
+```
+

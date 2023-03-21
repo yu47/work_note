@@ -526,3 +526,27 @@ GCC 特有的属性 "**attribute**"，以指定该函数应在主函数执行之
 修改进程名称    prctl(PR_SET_NAME, "myexcel", 0, 0, 0);
 ```
 
+### getpeername    从socket 取出建立连接的ip信息
+
+```
+		struct sockaddr_in peer_addr;
+		socklen_t peer_len = sizeof(peer_addr);
+		int ret = getpeername(client, (struct sockaddr *)&peer_addr, &peer_len); // zys 20230228 从client socket描述符取出地址信息
+		if (ret == -1) {
+			perror("getpeername");
+			continue;
+		}
+```
+
+### 根据socket 提取地址信息
+
+```
+		struct sockaddr_in peer_addr;
+		socklen_t peer_len = sizeof(peer_addr);
+		int ret = getpeername(client, (struct sockaddr *)&peer_addr, &peer_len); // zys 20230228 从client socket描述符取出地址信息
+		if (ret == -1) {
+			p_debug("getpeername error");
+			continue;
+		}
+```
+

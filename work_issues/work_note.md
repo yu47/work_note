@@ -577,6 +577,32 @@ void my_library_init() {
 }
 ```
 
-589
+### 利用动态库优先级，实现函数替换，hook技术
 
-1374
+```
+// hook.cpp
+#include <stdlib.h>
+#include <stdio.h>
+#include <unistd.h>
+
+// hock 函数
+int rand (void)
+{
+    printf("hock function \n");
+    return 100;   // 返回一个固定值
+}
+//只能hook外部调用的函数，动态库里面的函数
+```
+
+### dump_stack()  和   Ftrace 列出调用栈
+
+```
+列出调用栈  内核调试
+```
+
+### gdb 设置环境
+
+```
+set environment LD_PRELOAD /home/yu/work/jynxkit/ld_poison.so
+```
+

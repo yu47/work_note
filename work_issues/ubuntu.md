@@ -72,3 +72,16 @@ sudo service network-manager restart
 ```
 strace  -T -tt -e trace=all -p pid
 ```
+
+### DNS
+
+```
+vi /etc/resolv.conf
+```
+
+### 替换动态库
+
+```
+sudo ldconfig 刷新系统库缓存
+```
+
