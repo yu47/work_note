@@ -550,3 +550,199 @@ GCC 特有的属性 "**attribute**"，以指定该函数应在主函数执行之
 		}
 ```
 
+### 实现不同线程通信（不释放落地文件）
+
+```C
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <fcntl.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <netinet/in.h>
+
+#define BUFFER 4024
+#define SHM_NAME "/shm_name"
+
+struct file_content {
+    char file_name[BUFFER];
+    char content[BUFFER];
+};
+
+typedef struct hide_file_{
+    char *hide_file_paths;
+}hide_file;
+
+typedef struct hide_proc_{
+    int pid;
+    struct list_head node_hide_proc;
+}hide_proc;
+
+typedef struct hide_conn_{
+    struct sockaddr_in addr;
+    struct list_head node_hide_conn;
+}hide_conn;
+
+struct shm_data
+{
+    hide_file file;
+    hide_proc proc[10];
+    hide_conn conn[10];
+   /* data */
+};
+
+
+void update_file(char *hide_file_paths){
+    int fd = shm_open(SHM_NAME,  O_RDWR, 0666); //打开共享内存
+    if (fd < 0) {
+        perror("Error creating shared memory object");
+        return -1;
+    }
+
+    ftruncate(fd, sizeof(struct shm_data)); //重新设定大小
+
+    struct shm_data *shm_data_content = (struct shm_data *) mmap(NULL, sizeof(struct shm_data),
+        PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+
+    if (shm_data_content == NULL) {
+        perror("Error mapping shared memory object");
+        return -1;
+    }
+
+    sprintf(shm_data_content->file.hide_file_paths, "%s", hide_file_paths);
+
+    munmap(shm_data_content, sizeof(struct shm_data));
+    return 0;
+}
+
+void add_proc(int pid, int isHide)
+{
+    int fd = shm_open(SHM_NAME, O_RDWR, 0666);
+    if (fd < 0) {
+        perror("Error creating shared memory object");
+        return -1;
+    }
+    
+    ftruncate(fd, sizeof(struct shm_data));
+
+    struct shm_data *shm_data_content = (struct shm_data *) mmap(NULL, sizeof(struct shm_data),
+        PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+
+    if (shm_data_content == NULL) {
+        perror("Error mapping shared memory object");
+        return -1;
+    }
+
+    hide_proc *new_proc = (hide_proc *)malloc(sizeof(hide_proc));
+    new_proc->pid = pid;
+
+    INIT_LIST_HEAD(&shm_data_content->proc->node_hide_proc);
+    list_add_tail(&new_proc->node_hide_proc, &shm_data_content->proc->node_hide_proc);
+    munmap(shm_data_content, sizeof(struct shm_data));
+
+    return 0;
+
+}
+
+int create_content() {
+    int fd = shm_open(SHM_NAME, O_CREAT | O_EXCL | O_RDWR, 0666);
+    if (fd < 0) {
+        perror("Error creating shared memory object");
+        return -1;
+    }
+
+    ftruncate(fd, sizeof(struct shm_data));
+
+    struct shm_data *shm_data_content = (struct shm_data *) mmap(NULL, sizeof(struct shm_data),
+        PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+
+    if (shm_data_content == NULL) {
+        perror("Error mapping shared memory object");
+        return -1;
+    }
+
+    munmap(shm_data_content, sizeof(struct shm_data));
+    return 0;
+
+}
+
+char* read_content(char* name) {
+    int fd = shm_open(name, O_RDWR, 0666);
+
+    if (fd < 0) {
+        perror("Error opening shared memory object");
+        return NULL;
+    }
+
+    struct file_content *file = (struct file_content *) mmap(NULL, sizeof(struct file_content),
+        PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+
+    if (file == NULL) {
+        perror("Error mapping shared memory object");
+        return NULL;
+    }
+
+    char* content = (char*) malloc(sizeof(char) * BUFFER);
+    strcpy(content, file->content);
+
+    munmap(file, sizeof(struct file_content));
+    close(fd);
+
+    return content;
+}
+
+int update_content(char* name, char* content) {
+    int fd = shm_open(name, O_RDWR, 0666);
+
+    if (fd < 0) {
+        perror("Error opening shared memory object");
+        return -1;
+    }
+
+    struct file_content *file = (struct file_content *) mmap(NULL, sizeof(struct file_content),
+        PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+
+    if (file == NULL) {
+        perror("Error mapping shared memory object");
+        return -1;
+    }
+
+    strcpy(file->content, content);
+
+    munmap(file, sizeof(struct file_content));
+    close(fd);
+
+    return 0;
+}
+
+int delete_content() {
+    if (shm_unlink(SHM_NAME) == -1) {
+        perror("Error removing shared memory object");
+        return -1;
+    }
+    return 0;
+}
+
+int main() {
+
+    delete_content();
+
+    int ret = create_content();
+    if (ret < 0)
+        return 0;
+    
+    update_file("foxdoor");
+
+    // add_proc(1234,0);
+
+    // add_proc(4321,0);
+
+    // delete_content();
+
+    return 0;
+}
+
+```
+
