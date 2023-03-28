@@ -746,3 +746,32 @@ int main() {
 
 ```
 
+### 高版本glibc 在低版本not found
+
+```
+1. 采用静态编译。
+2. 在低版本的glibc编译，向上兼容。
+3. 用readelf -s 文件 找出高版本的函数 
+   用__asm__(".symver memcpy, memcpy@GLIBC_2.2.5"); 单独编译。
+```
+
+### 低版本ld，出现BFD internal error, aborting at reloc.c line 443 in bfd_get_reloc_size 错误。
+
+更新binutils，可以解决。
+
+第1步：下载
+
+```
+wget https://ftp.gnu.org/gnu/binutils/binutils-2.26.tar.gz
+```
+
+第2步：解压，编译安装
+
+```
+tar -zxf binutils-2.26.tar.gz 
+cd binutils-2.26
+./configure --prefix=/usr
+make 
+make install
+```
+
