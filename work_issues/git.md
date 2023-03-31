@@ -47,3 +47,19 @@ git reset --soft HEAD~2
 回到上上次commit前
 ```
 
+### 只拉取项目中的，某个目录
+
+```
+$ git init
+$ git remote add -f origin https://github.com/XXXXX/test.git    #拉取remote的all objects信息
+
+$ git config core.sparsecheckout true   #开启sparse clone
+$ echo "build" >> .git/info/sparse-checkout   
+
+$ less .git/info/sparse-checkout
+  build
+$  git pull origin master or main  #拉取
+$ ls
+ build
+```
+

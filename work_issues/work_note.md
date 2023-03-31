@@ -530,16 +530,15 @@ Ctrl+Alt+Up/Down一般是被“切换工作空间”功能占用，我们通过�
     a、查看switch-to-workspace-up
     gsettings get org.gnome.desktop.wm.keybindings switch-to-workspace-up
     返回：
-
     ['<Super>Page_Up', '<Control><Alt>Up']
+    
     b、查看switch-to-workspace-down
     gsettings get org.gnome.desktop.wm.keybindings switch-to-workspace-down
     返回：
-
     ['<Super>Page_Up', '<Control><Alt>Down']
+    
 2、解除系统组合键占用
     可以看到，有两组快捷键，我们保留前面的那一组。
-
     gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-up "['<Super>Page_Up']"
     gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-down "['<Super>Page_Down']"
 3、复位
@@ -550,6 +549,9 @@ Ctrl+Alt+Up/Down一般是被“切换工作空间”功能占用，我们通过�
 
     gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-up "['<Super>Page_Up', '<Control><Alt>Up']"
     gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-down "['<Super>Page_Down', '<Control><Alt>Down']"
+    
+    罗列所以快捷键
+    gsettings list-keys  org.gnome.desktop.wm.keybindings 
 ```
 
 ### 编译动态库.so
