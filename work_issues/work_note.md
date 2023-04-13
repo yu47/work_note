@@ -610,10 +610,10 @@ set environment LD_PRELOAD /home/yu/work/jynxkit/ld_poison.so
 
 ### int 转16进制  
 
-```
+```C
 	//2个字节 转int
 	unsigted char buffer[2] = {0x00,0x10}
-    int data_count = ((buffer[0] << 8) + buffer[1];
+    int data_count = ((buffer[0] << 8) + buffer[1]; //data_count = 16
 	//int 转16进制  用2个字节
 	buffer[0] = (data_count >> 8) & 0xFF;
 	buffer[1] = (data_count)&0xFF;
@@ -622,7 +622,7 @@ set environment LD_PRELOAD /home/yu/work/jynxkit/ld_poison.so
 ### 应用层读写注册表
 
 ```C
-C#include <Windows.h>
+#include <Windows.h>
 #include <iostream>
 
 void getValue(_In_ HKEY hKey, _In_opt_ LPCWSTR keyName) {
