@@ -787,3 +787,11 @@ h_file.close()
 	system("pause");
 ```
 
+### Winrar打包成exe
+
+```
+WinRAR.exe a 111.exe  ../Test/*.*
+rar.exe c -znote.txt 111.exe
+```
+
+大明养小明 谁养大明 久(狗)仰大名

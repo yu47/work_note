@@ -194,20 +194,20 @@ ui->filesOperHistoryTableWidget->setSortingEnabled(false);
 QT表格
 
 ```c++
-表头
+//列
 typedef enum _SsANOCol {
     SsANOResultRecordColNumNetid,
 } SsANOCol;
 
-内容
+//结构体
 typedef struct _SsANOResultRecord { 
     QString netid;
 } SsANOResultRecord, *PSsANOResultRecord;
 
-内容填充
-int row = ui->TableWidget->rowCount();
-ui->TableWidget->insertRow(row);
-QTableWidgetItem *SsnetidItem = new QTableWidgetItem("111111111");
+//内容填充
+int row = ui->netstatTableWidget_2->rowCount();// 自动增加行
+ui->netstatTableWidget_2->insertRow(row);
+QTableWidgetItem *SsnetidItem = new QTableWidgetItem("111111111");//单元显示的内容
 SsnetidItem->setTextAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
 ui->netstatTableWidget_2->setItem(row, SsANOResultRecordColNumNetid, SsnetidItem);
 ```
@@ -278,5 +278,110 @@ setAttribute(Qt::WA_DeleteOnClose);
 
 ```
 QThreadPool::globalInstance()->setMaxThreadCount(n);
+```
+
+### windows打包程序 ，用Release， 编译
+
+```
+打开 qt5.9... cmd
+cd 程序目录
+windeployqt KBN.exe
+执行成功后，会把所需库移动进来
+```
+
+### 编译RCC  读取资源文件，并写入本地文件。
+
+```
+qre内容:
+<RCC>
+    <qresource prefix="/icon">
+        <file>OIG.ico</file>
+    </qresource>
+    <qresource prefix="/json">
+        <file>config.json</file>
+    </qresource>
+    <qresource prefix="/exe">
+        <file>Aqc15.exe</file>
+        <file>Aqc18.exe</file>
+        <file>BIOS_info.exe</file>
+        <file>Cx2.exe</file>
+        <file>Cx3.exe</file>
+    </qresource>
+</RCC>
+
+编译命令
+rcc -binary res.qrc -o resources.rcc
+```
+
+```C++
+    bool status = QResource::registerResource(qApp->applicationDirPath() + "/resource.rcc"); //初始化资源
+    //接下来就可以像res.qrc一样正常操作了
+    
+    //从资源读取文件，写入到本地文件。 注意包含头文件
+
+#include "QResource"
+void KBN::exportExe(QString resPath, QString exportName)
+{
+    QString localDirPath = QFileDialog::getExistingDirectory(
+                this,"choose save directory");
+    if (localDirPath == "")
+        return;
+
+    const uchar* dataPtr = QResource(resPath).data();
+    int dataSize = QResource(resPath).size();
+    QByteArray data = QByteArray::fromRawData(reinterpret_cast<const char*>(dataPtr), dataSize);
+
+    QFile file(localDirPath+"//"+exportName);
+    if (file.open(QIODevice::WriteOnly)) {
+        file.write(data);
+        file.close();
+    }
+    else {
+        QMessageBox::information(this,"kBN","export failt!");
+        return;
+    }
+
+    QMessageBox::information(this,"kBN","export success!");
+}
+```
+
+### 获取临时目录
+
+```
+#include <QStandardPaths>
+QString opensslPath = QStandardPaths::writableLocation(QStandardPaths::TempLocation);
+
+```
+
+### json解析
+
+```C++
+ //文件内容
+ [
+ {},
+ {}
+ ]
+    
+    QFile file(txtPath);
+    if (!file.open(QIODevice::ReadOnly|QIODevice::Text)) {
+        qDebug() << "Failed to open file";
+        return ;
+    }
+
+    QString jsonString = file.readAll();
+    file.close();
+
+
+    QJsonDocument doc = QJsonDocument::fromJson(jsonString.toUtf8());
+    if (!doc.isArray()) {
+        qDebug() << "Error: Not an array!";
+        return;
+    }
+    QJsonArray logArray = doc.array();
+
+    for(int row = 0; row < logArray.size(); row++){
+        QJsonObject logObject = logArray[row].toObject();
+        QString logdate = logObject["date"].toString();
+	}
 ```
 
