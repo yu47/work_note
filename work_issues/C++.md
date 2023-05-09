@@ -58,3 +58,22 @@ bool execute_command(const std::string cmd, std::string& output, size_t size) {
     fflush(pipe);
 ```
 
+### C++ 后台静默启动（C++程序最上面添加）
+
+```
+#pragma comment(linker, "/subsystem:\"windows\" /entry:\"mainCRTStartup\"")
+```
+
+### 读取dll 文件的函数,并使用。
+
+```
+typedef U32(*PBmapiInitDiag)(IN U32 handle);
+int main(){
+	U32 status;
+	U32 handle;
+	HMODULE Hdll = LoadLibrary(L"BMAPIa.dll");
+    PBmapiInitDiag BmapiInitDiag = (PBmapiInitDiag)GetProcAddress(Hdll, "BmapiInitDiag");
+	status = BmapiInitDiag(handle);
+}
+```
+
