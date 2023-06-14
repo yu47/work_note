@@ -58,14 +58,13 @@ qmake -v
 使用命令执行依赖文件拷贝
 
 ```powershell
-linuxdeployqt Test -appimage
+linuxdeployqt  -appimage Test
 ```
 
 忽略新版本
 
 ```powershell
 linuxdeployqt Test -appimage -unsupported-allow-new-glibc
-
 linuxdeployqt Test -appimage -unsupported-bundle-everything
 ```
 

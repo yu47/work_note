@@ -794,4 +794,15 @@ WinRAR.exe a 111.exe  ../Test/*.*
 rar.exe c -znote.txt 111.exe
 ```
 
-大明养小明 谁养大明 久(狗)仰大名
+### 如果出现error: ‘NULL’ undeclared (first use in this function)
+
+```
+添加 <stddef.h> 头文件
+```
+
+### 查看硬盘序列号
+
+```
+wmic diskdrive get Model,name,serialnumber
+```
+
