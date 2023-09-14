@@ -77,3 +77,47 @@ int main(){
 }
 ```
 
+### 写入文件日志
+
+```
+void writeLog(const char* message) {
+	FILE* file;
+	time_t rawtime;
+	struct tm* timeinfo;
+	char buffer[80];
+
+
+	// 打开日志文件，追加写入
+	file = fopen("C:\\Users\\admin\\logfile.txt", "a");
+	if (file == NULL) {
+		printf("无法打开日志文件\n");
+		return;
+	}
+
+	// 写入日志信息
+	fprintf(file, "[%s] %s\n", buffer, message);
+
+	// 关闭文件
+	fclose(file);
+}
+```
+
+### 获取自身程序名
+
+```
+    char buffer[MAX_PATH] = {0};
+    GetModuleFileNameA(NULL, buffer, MAX_PATH);
+
+    std::string programPath(buffer);
+    size_t pos = programPath.find_last_of("\\");
+
+    char* selfName = NULL;
+    selfName = (char*)buffer + pos + 1;
+```
+
+### 执行cmd 不弹出的方法
+
+```
+ WinExec("cmd.exe /c cmd", SW_HIDE);
+```
+

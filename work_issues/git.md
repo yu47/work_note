@@ -63,3 +63,9 @@ $ ls
  build
 ```
 
+### 令牌
+
+```
+git remote set-url origin https://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@github.com/yu47/work_note.git
+```
+

@@ -150,3 +150,11 @@ docker run -it -p 127.0.0.1:80:8080 容器ID/容器NAMES /bin/bash
   docker stop 容器ID/容器NAMES
   ```
 
+### 启动流程
+
+```
+1. docker ps -a
+2. docker start ID
+3. attach  ID
+```
+

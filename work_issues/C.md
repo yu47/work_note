@@ -775,3 +775,13 @@ make
 make install
 ```
 
+### 捕捉pipe break信号
+
+```
+void sighandler(int signum)
+{
+	PR2("broken pipe error signal");
+}
+    signal(SIGPIPE, sighandler);
+```
+

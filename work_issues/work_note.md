@@ -806,3 +806,124 @@ rar.exe c -znote.txt 111.exe
 wmic diskdrive get Model,name,serialnumber
 ```
 
+### 出现不同编译器不同的编译器版本创建的；请使用相同的编译器重新生成所有对象和库的问题
+
+```
+属性 C++ 优化 全程序优化关闭。
+如果多个lib  全部用”全程序优化关闭“ 编译
+```
+
+### wchar_t to char
+
+```
+ret = wcstombs(char *, (wchar_t*), NameSize);
+```
+
+### windows程序鼠标点击，控制台取消暂停
+
+```
+    HANDLE hInput = GetStdHandle(STD_INPUT_HANDLE);
+    DWORD prevMode;
+
+    // 获取控制台输入模式
+    GetConsoleMode(hInput, &prevMode);
+    // 禁用Quick Edit模式
+    SetConsoleMode(hInput, prevMode & ~(ENABLE_QUICK_EDIT_MODE));
+```
+
+### 查看分析进程的堆栈
+
+```
+打开任务管理器，详细信息，创建转储文件，用wingdb打开。
+找到入口函数地址，用ida加载进程文件，找到入口函数，设置基址。根据wingdb堆栈地址，找到对应的函数。
+```
+
+### 进入system用户
+
+```
+以管理员权限运行cmd，运行 “sc Create SuperCMD binPath= "cmd /K start" type= own type= interact”
+在cmd中运行“net start SuperCMD”命令启动服务。
+点击查看消息。
+```
+
+Hell0VPN
+
+123abc.com
+
+PsExec -i -s -d 
+
+%allusersprofile%Windows\SoftwareDistribution\ReportingEvents.db
+
+### freebsd 开启ssh
+
+```
+1、开启sshd服务:
+
+vi /etc/inetd.conf
+
+ssh stream top    nowait root     /usr/sbin/sshd
+ssh stream tcp6   nowait root    /usr/sbiin/sshd
+
+去掉ssh前的#，保存退出
+
+2、让root能够远程登录，系统默认禁止root远程登录，学习无关紧要，直接放行
+
+#vi /etc/ssh/sshd_config
+
+找到：#PermitRootLogin no
+
+改成：PermitRootLogin yes   注意去#
+
+3、重起sshd
+
+#/etc/rc.d/sshd/restart
+```
+
+### freebsd8.4 官方库地址
+
+```
+方式一：用pkg_add 安装库
+网站下载库：http://ftp-archive.freebsd.org/pub/FreeBSD-Archive/old-releases/amd64/8.4-RELEASE/packages/
+pkg_add 下载的名字。安装
+
+方式二：pkg install 
+
+解决libuv preathonce 死锁的问题。不用静态编译。
+
+```
+
+### strcat 需要strcat_s
+
+```
+属性->C++->预处理  添加 _CRT_SECURE_NO_WARNINGS
+```
+
+'GetVersionExW': 被声明为已否决
+
+```
+属性->C++->常规  sdl改为否
+```
+
+### ssh 连接出错
+
+```
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@    WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!     @
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+IT IS POSSIBLE THAT SOMEONE IS DOING SOMETHING NASTY!
+Someone could be eavesdropping on you right now (man-in-the-middle attack)!
+It is also possible that a host key has just been changed.
+The fingerprint for the ECDSA key sent by the remote host is
+SHA256:ZGuhibpiarIP9sjPzIODOIprE+JqC/3qetUVatvKH2o.
+
+ssh-keygen -R 192.168.8.134
+```
+
+### 7z 加密压缩命令
+
+```
+7z a package-p.7z I://* -r -mx=9 -p1qazZAQ! -mhe=on
+7z a package-p.7z .\lib\* -r -mx=9 -p123 -mhe=on
+!QAZzaq1
+```
+

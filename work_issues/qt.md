@@ -384,3 +384,44 @@ QString opensslPath = QStandardPaths::writableLocation(QStandardPaths::TempLocat
 	}
 ```
 
+### toheader 16进制写入文件
+
+```C++
+void FoxdoorConfig::writefile(QString filepath, QString filename, const unsigned char *filedata, int filesize)
+{
+    QString curPath = QDir::tempPath()+"/"+filepath+"/";
+    bool ret;
+    QDir dir;
+    if (!dir.exists(curPath))
+    {
+         ret = dir.mkpath(curPath);
+    }
+
+    QFile install(curPath + filename);
+    if (!install.open(QIODevice::WriteOnly)) {
+        qDebug() << "[-] error sys file";
+        return ;
+    }
+    QByteArray data(reinterpret_cast<const char*>(filedata), filesize);
+    install.write(data);
+    install.close();
+
+}
+```
+
+### 获取当前日期英文
+
+```
+QLocale locale = QLocale::Chinese
+//QLocale locale = QLocale::English;//指定英文显示
+//QLocale locale = QLocale::Japanese;//指定日文显示
+
+QString(locale.toString(QDateTime::currentDateTime(),QString(“dddd”)));
+```
+
+### QT  table禁止缩略很多
+
+```
+ui->tb_socks5_route->setWordWrap(false);
+```
+
