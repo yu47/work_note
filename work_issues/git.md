@@ -69,3 +69,11 @@ $ ls
 git remote set-url origin https://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@github.com/yu47/work_note.git
 ```
 
+### .gitignore 不生效的解决	
+
+```
+git rm -r --cached .
+git add .
+git commit -m 'update .gitignore'
+git push -u origin master
+```

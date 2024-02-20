@@ -155,6 +155,6 @@ docker run -it -p 127.0.0.1:80:8080 容器ID/容器NAMES /bin/bash
 ```
 1. docker ps -a
 2. docker start ID
-3. attach  ID
+3. docker attach  ID
 ```
 

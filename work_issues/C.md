@@ -785,3 +785,16 @@ void sighandler(int signum)
     signal(SIGPIPE, sighandler);
 ```
 
+### realloc(): invalid next size
+
+```
+主要原因是初始化结构体数组的时候malloc给的大小与realloc给的大小差异太大
+需要增加malloc
+```
+
+### 动态库创建
+
+```
+gcc test.c -shared -fPIC -o test.so
+```
+

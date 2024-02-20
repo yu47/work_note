@@ -1,0 +1,147 @@
+钟昱生
+
+### 20240102
+
+* xm linux设备管控：
+  
+  1. 控制端上线，从服务端获取文件缓存。
+  2. 从数据库提取所有日期。添加到下拉框。 加入离线缓存池。与最新的文件信息对比，标记处删除或新增的文件。
+  3. 修复在musl编译器下，运行错误的问题。
+  4. 更改共享信息的传输方式。
+  
+  
+
+钟昱生
+
+### 20240103
+
+* xm linux设备管控：
+  1. 获取新增两个按钮，可以主动从服务器获取文件缓存信息。
+  2. 更改卸载只卸载马不删除控制端记录。
+  3. 修改在大端奔溃问题。
+  4. 文件浏览页面增加文件搜索功能。
+  5. 增加离线状态下可以根据本地现有的缓存记录进行文件对比（增加或者删除）。
+
+
+
+钟昱生
+
+### 20240105
+
+* 协助柏瀚修改rdp静态免杀，修改明文字符串，编译时把字符串加密。
+* 前锋马：
+  1. 研究任务分发，为后续更好的用户体验。
+
+
+
+下周计划：
+
+钟昱生
+
+* 前锋马：
+  1. 修复可能还存在的问题。
+  2. 开发任务分发的框架，应用到前锋马中。
+
+
+
+共享文件夹缓存
+
+从数据库提取所有日期。复选栏。  选中事件。 填入qmap缓存池。在线获取跟缓存池对比。
+
+获取所有文件时设置一分钟超时。避免获取整个。√
+
+共享信息更改数据传输方式。
+
+
+
+        fwd_info = (forwardInfo *)(message + offset);
+        offset += sizeof(forwardInfo);
+
+
+
+
+```c
+    int sum = BUFSIZ;
+    char *message = (char *)malloc(sum);
+    if (message == NULL)
+    {
+        return;
+    }
+    memset(message, '\0', sum);
+
+
+        if (sum < (sizeof(forwardInfo) * (count + 1)))
+        {
+            message = realloc(message, sum + BUFSIZ);
+            if (message == NULL) {
+                return 0;
+            }
+            memset(message + sum, '\0', BUFSIZ );
+            sum += BUFSIZ;
+        }
+
+```
+
+
+
+
+
+
+
+```
+本地															远端
+监听1080    监听4444														
+4444(accept)				与远端建立连接							connect
+1080(accept)				send/recv			<->				recv/send
+
+
+```
+
+
+
+```
+ma
+socket   set_cb (recv_cb) -> analyse
+loop() -> recv()  ↑
+swich
+recv_cb()  map<id, message> 1 2 3
+struce {
+	uint task_id;
+	uint type;
+	uint message_len;
+}
+
+recv -> type  -> taskid pthread()->
+```
+
+```
+control
+recv()
+analyse
+swich
+map recv_cb()
+```
+
+
+
+```
+thread(recv) -> pack -> task_id type  ->  map<id, task_cb>
+
+```
+
+```
+loop()
+new_task
+task_id
+recv_task_id_message
+
+
+struct {
+	CRITICAL_SECTION cs;
+	message;
+	task_id;
+	socket_id;
+}
+```
+
+

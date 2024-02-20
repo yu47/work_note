@@ -121,3 +121,82 @@ void writeLog(const char* message) {
  WinExec("cmd.exe /c cmd", SW_HIDE);
 ```
 
+### char to wchar
+
+```
+	char runname[32] = "rundll32.exe";
+
+	wchar_t* pwszUnicode;
+
+	size_t iSize = MultiByteToWideChar(CP_ACP, 0, runname, -1, NULL, 0);
+	pwszUnicode = (wchar_t*)malloc(iSize * sizeof(wchar_t));
+	MultiByteToWideChar(CP_ACP, 0, runname, -1, pwszUnicode, iSize);
+	
+	
+	
+void s2ws(char* charstr, wchar_t* wcharstr, int len)
+{
+	MultiByteToWideChar(CP_ACP, 0, charstr, -1, wcharstr, len);
+}
+char test[32] = "12234567";
+wchar_t wtest[32] = { 0 };
+s2ws(test, wtest, 8 * 2);
+
+bool UnicodeToUtf8(const wchar_t* lpszUnicode, char* lpszUtf8, int nLen)
+{
+	int nRet = ::WideCharToMultiByte(CP_UTF8, 0, lpszUnicode, -1, lpszUtf8, nLen, NULL, NULL);
+	return (0 == nRet) ? FALSE : TRUE;
+}
+
+bool Utf8ToUnicode(const char* lpszUtf8, wchar_t* lpszUnicode, int nLen)
+{
+	int nRet = ::MultiByteToWideChar(CP_UTF8, 0, lpszUtf8, -1, lpszUnicode, nLen);
+	return (0 == nRet) ? FALSE : TRUE;
+}
+```
+
+### 取消const 转化提示
+
+![](../\images\Snipaste_2023-11-07_18-06-34.png)
+
+wchar_t
+
+```
+wcscat
+wsclen
+```
+
+### 日志
+
+```
+
+freopen("文件名", "a", stdout);
+
+#define PR2(str, ...) {fprintf(stdout, " %s:%d  %s()\n  %s:  " str "\n\n", \
+ __FILE__ ,__LINE__,__func__, __TIMESTAMP__, ##__VA_ARGS__);fflush(stdout);}
+
+
+输出系统时间
+
+printf("\n mycode  Build on "__TIME__" "__DATE__" win7\n");
+
+打印的结果是：
+
+ mycode  Build on 15:39:58 Apr 19 2019 win7
+
+系统常用的宏定义：
+
+__TIME__：当前系统时间  例如 15:39:58
+
+__DATE__：当前系统日期  Apr 19 2019
+
+__TIMESTAMP__：当前时间日期 例如：  printf(__TIMESTAMP__）;   打印结果Fri Apr 19 16:24:31 2019
+
+__LINE__： 当前代码行 例如： printf("%d",__LINE__);
+
+__FILE__：执行的当前文件名  例如：  printf(__FILE__）;
+
+__FUNCTION__：打印函数名 printf("%s",__FUNCTION__); 或者printf(__FUNCTION__）;只要是字符串的都可以这样
+
+```
+

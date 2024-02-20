@@ -128,10 +128,18 @@ quiet kgdbwait kgdb8250=io,03f8,ttyS0,115200,4 kgdboc=ttyS0,115200 kgdbcon nokas
    gdb -s /usr/lib/debug/boot/vmlinux-4.10.0-19-generic
    gdb> source config
    echo g > "/proc/sysrq-trigger"
+   ```
 ```
    
-   ```
+```
    set substitute-path /usr/lib/debug/boot/vmlinux-5.4.0-42-generic /home/yu/linux-source-5.4.0/
    ```
    
    
+   ```
+
+修改vmx 用ida调试
+
+debugStub.listen.guest64 = "TRUE" debugStub.listen.guest64.remote = "TRUE" debugStub.port.guest64 = "12345" 
+
+debugStub.listen.guest32 = "TRUE" debugStub.listen.guest32.remote = "TRUE" debugStub.port.guest32 = "12346"

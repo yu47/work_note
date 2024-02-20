@@ -85,3 +85,103 @@ vi /etc/resolv.conf
 sudo ldconfig 刷新系统库缓存
 ```
 
+### 关闭防火墙
+
+```
+service iptables stop
+systemctl stop firewalld.service 
+systemctl stop firewalld
+```
+
+### 根据进程名删除
+
+```
+(ps -ef | grep "gedit 123"  | grep -v 'grep --color=auto' | awk '{print $2}') | xargs kill -9
+```
+
+### (ERROR 1698 (28000): Access denied for user 'root'@'localhost')
+
+1、通过sudo进入mysql，ubuntu默认sudo不需要密码就可以进
+
+```bash
+ubuntu@ubuntu:~$ sudo mysql
+```
+
+2、进入mysql库
+
+```bash
+mysql> use mysql;
+```
+
+3、改密码
+
+```bash
+mysql> ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '123456';
+```
+
+### 动态库路径添加
+
+```
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:XXX
+静态库
+LIBRARY_PATH
+可执行程序
+PATH
+C头文件
+C_INCLUDE_PATH
+C++ 头文件
+CPLUS_INCLUDE_PATH
+pkg-config路径
+PKG_CONFIG_PATH	
+```
+
+### 静态编译
+
+```
+./configure --disable-shared --enable-static
+```
+
+### 编译protobuf-c
+
+```
+1、首先安装依赖环境
+	sudo apt-get install autoconf automake libtool curl make g++ unzip
+2、下载源码
+	git clone https://github.com/protocolbuffers/protobuf.git
+3、进入源码文件夹
+	cd protobuf/
+4、版本回滚--v3.20.3
+	git checkout fe271ab	
+5、解压后进入到解压目录
+	cd protobuf-3.20.3/
+6、运行如下命令
+	./autogen.sh
+	./configure
+	sudo make
+	sudo make check
+	sudo make install
+	sudo ldconfig				// 更新配置
+	protoc --vertion            // 在任何目录下输入这个命令，查看protoc版本，出现版本号即成功
+
+
+7、下载protobuf-c
+    git clone https://github.com/protocolbuffers/protobuf.git
+    cd protobuf
+    ./autogen.sh
+    ./configure
+    make
+    sudo make install
+
+protoc --c_out=. student.proto
+
+-------------------------------------
+syntax = "proto2";
+message Student
+{
+    required string name    = 1;
+    required uint32 num     = 2;
+    required uint32 c_score = 3;
+}
+-------------------------------------
+```
+
