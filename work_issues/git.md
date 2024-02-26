@@ -75,5 +75,5 @@ git remote set-url origin https://github_pat_11AOKVZEA0jomIpXfDvxjA_Zi0xCR6jLlZb
 git rm -r --cached .
 git add .
 git commit -m 'update .gitignore'
-git push -u origin master
+git push -u origin main
 ```
