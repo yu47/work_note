@@ -798,3 +798,16 @@ void sighandler(int signum)
 gcc test.c -shared -fPIC -o test.so
 ```
 
+### linux C 提取文件名
+
+```
+    #include <libgen.h>
+    char path[] = "/home/yu/1234"
+    printf("File name: %s\n", basename(path)); // 提取文件名
+    
+    printf("Directory path: %s\n", dirname(path));// 提取文件夹名
+    
+    
+    
+```
+

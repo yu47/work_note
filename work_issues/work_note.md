@@ -1753,3 +1753,13 @@ int main(int argc, char const *argv[])
 
 ```
 
+### chrome 浏览器自定义数据储存
+
+```
+图标加上 chrome.exe --enable-ipv6 --user-data-dir="E:\yu\chrome\User Data" --disk-cache-dir="E:\yu\chrome\User Data" --disk-cache-size=1048576000
+```
+
+ubuntu 
+
+
+
