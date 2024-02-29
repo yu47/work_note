@@ -1759,7 +1759,69 @@ int main(int argc, char const *argv[])
 图标加上 chrome.exe --enable-ipv6 --user-data-dir="E:\yu\chrome\User Data" --disk-cache-dir="E:\yu\chrome\User Data" --disk-cache-size=1048576000
 ```
 
-ubuntu 
+### 搭建本地ubuntu镜像源
+
+* * sudo apt install apt-mirror
+
+  * sudo vi /etc/apt/mirror.list
+
+    ```
+    ############# config ##################
+    #下载位置 默认为：/var/spool/apt-mirror/
+    set base_path    /home/XXXXX/XXX
+    #
+    #set mirror_path  $base_path/mirror
+    #set skel_path    $base_path/skel
+    #set var_path     $base_path/var
+    #set cleanscript $var_path/clean.sh
+    #set defaultarch  <running host architecture>
+    #set postmirror_script $var_path/postmirror.sh
+    #set run_postmirror 0
+    set nthreads     20
+    set _tilde 0
+    #
+    ############# end config ##############
+    deb [arch=amd64] http://mirrors.aliyun.com/ubuntu/ focal main restricted universe multiverse
+    deb [arch=amd64] http://mirrors.aliyun.com/ubuntu/ focal-security main restricted universe multiverse
+    deb [arch=amd64] http://mirrors.aliyun.com/ubuntu/ focal-updates main restricted universe multiverse
+    deb [arch=amd64] http://mirrors.aliyun.com/ubuntu/ focal-proposed main restricted universe multiverse
+    deb [arch=amd64] http://mirrors.aliyun.com/ubuntu/ focal-backports main restricted universe multiverse
+    
+    # 下载完成后清除部分空间
+    clean https://mirrors.aliyun.com/ubuntu
+    
+    ```
+
+  * ubuntu 2204 代号:jammy 大小：335.7GB
+
+  * ubuntu 2004 代号:focal  大小：440.8GB
+
+  * ubuntu 1804 代号:bionic 大小：296.2GB
+
+  * ubuntu 1604 代号:xenial 大小：115.5GB
+
+    
+
+  #### 搭建访问
+
+  * sudo apt install apache2
+  * ln –s /home/xxx/xxx/mirror/mirrors.aliyun.com/Ubuntu /var/www/html/Ubuntu
+
+  #### 需要访问的用户
+
+  * 修改镜像源
+
+    ```
+    deb http://127.0.0.1/ubuntu/ bionic main restricted universe multiverse
+    deb http://127.0.0.1/ubuntu/ bionic-updates main restricted universe multiverse
+    deb http://127.0.0.1/ubuntu/ bionic-security main restricted universe multiverse
+    deb http://127.0.0.1/ubuntu/ bionic-backports main restricted universe multiverse
+    deb http://127.0.0.1/ubuntu/ bionic-proposed main restricted universe multiverse
+    ```
+    
+    
+
+
 
 
 
