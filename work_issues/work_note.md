@@ -1161,13 +1161,13 @@ Username：Brucy
 Serial：218o1A9CEA2E5227
 ```
 
-### cmd 查md5值
+### cmd 查sha1值
 
 ```
 windows ：
 	certutil -hashfile filename
 linux :
-	md5sum filename
+	sha1sum filename
 ```
 
 ### eset 激活码
