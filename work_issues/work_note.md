@@ -1573,7 +1573,8 @@ int main(int argc, char const *argv[])
             }
 		}
     }
-    
+    tcsetattr(STDIN_FILENO, TCSAFLUSH, &tp); // 恢复终端正常输入
+
     return 0;
 }
 
