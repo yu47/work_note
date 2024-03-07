@@ -158,3 +158,92 @@ docker run -it -p 127.0.0.1:80:8080 容器ID/容器NAMES /bin/bash
 3. docker attach  ID
 ```
 
+
+
+
+
+
+
+### 本地内网仓库搭建
+
+#### 安装skopeo
+
+```
+SKOPEO_VERSION=v1.3.0
+git clone --branch ${SKOPEO_VERSION} https://github.com/containers/skopeo
+cd skopeo
+
+BUILD_IMAGE=nixos/nix:2.3.12
+docker run --rm -t -v $PWD:/build ${BUILD_IMAGE} \
+sh -c "cd /build && nix build -f nix && cp ./result/bin/skopeo skopeo"
+```
+
+#### 安装harbor
+
+##### 安装docker-compose
+
+```
+pip install docker-compose
+```
+
+##### harbor安装包
+
+```
+下载 https://github.com/goharbor/harbor/releases
+
+tar xf harbor-offline-installer-v2.0.1.tgz 
+cd harbor
+# cp harbor.yml.tmpl  harbor.yml
+# mkdir -p /opt/application/harbor     //用于存放harbor的持久化数
+
+修改harbor.yml
+harbor.yml配置文件主要修改参数如下：
+hostname: 192.168.0.8:9999          //设置访问地址，可以使用ip、域名，不可以设置为127.0.0.1或localhost。默认情况下，harbor使用的端口是80，若使用自定义的端口，除了要改docker-compose.yml文件中的配置外，这里的hostname也要加上自定义的端口，否则在docker login、push时会报错
+#http配置
+http:
+# port for http, default is 80. If https enabled, this port will redirect to https port
+port: 9999                      
+
+#https配置（如不需要可不配置,注释掉）
+# https related config
+#https:
+# https port for harbor, default is 443
+ #port: 443
+# The path of cert and key files for nginx
+ #certificate: /your/certificate/path
+ #private_key: /your/private/key/path
+
+
+```
+
+##### install
+
+```
+./install.sh
+```
+
+##### 启动harbor
+
+```
+docker-compose up
+```
+
+
+
+#### 搬运互联网上的镜像 到 本地仓库
+
+```
+sudo ./skopeo  copy  docker://{DOCKER_NAME}:latest --dest-creds=admin:Harbor12345 docker://127.0.0.1:8808/library/{DOCKER_NAME}:latest --insecure-policy --src-tls-verify=false --dest-tls-verify=false -a
+
+--dest-creds=admin:Harbor12345   //推送的账号密码
+127.0.0.1:8808/library/     //推送的路径
+ --insecure-policy --src-tls-verify=false --dest-tls-verify=false  //不使用代理
+ -a 			//如果有多个架构，全部copy
+```
+
+
+
+```
+./skopeo inspect --tls-verify=false  docker://127.0.0.1:8808/library/adminer:latest --raw | jq '.'
+```
+
