@@ -1801,17 +1801,35 @@ int main(int argc, char const *argv[])
 
   * ubuntu 1604 代号:xenial 大小：115.5GB
 
-    
-
+  
+#### apt-mirror 2017停止更新
+  
+​	需要手动下载icons
+  
+  ```
+cd /data/ubuntu/mirror/mirrors.aliyun.com/ubuntu/dists/
+  dists="*"
+for dist in ${dists}; do
+    for comp in main  multiverse universe; do
+    for size in 48 64 128; do
+      wget http://archive.ubuntu.com/ubuntu/dists/${dist}/${comp}/dep11/icons-${size}x${size}@2.tar.gz -O ${dist}/${comp}/dep11/icons-${size}x${size}@2.tar.gz;
+     done
+   done
+  done
+  
+  ```
+  
+  
+  
   #### 搭建访问
-
+  
   * sudo apt install apache2
   * ln –s /home/xxx/xxx/mirror/mirrors.aliyun.com/Ubuntu /var/www/html/Ubuntu
-
+  
   #### 需要访问的用户
-
+  
   * 修改镜像源
-
+  
     ```
     deb http://127.0.0.1/ubuntu/ bionic main restricted universe multiverse
     deb http://127.0.0.1/ubuntu/ bionic-updates main restricted universe multiverse
@@ -1821,8 +1839,248 @@ int main(int argc, char const *argv[])
     ```
     
     
+  
+
+```
+{
+	"insecure-registries": ["http://192.168.105.235:5000"]
+	}
+```
 
 
 
+### docker latest失败的镜像
 
+```
+adminer library2:latest
+aerospike:latest
+bash:latest
+cassandra:latest
+cirros:latest
+consul:latest
+couchdb:latest
+docker:latest
+drupal:latest
+elasticsearch:latest
+elixir:latest
+fluentd:latest
+gcc:latest
+ghost:latest
+haproxy:latest
+hello-world:latest
+httpd:latest
+hylang:latest
+ibm-semeru-runtimes:latest
+irssi:latest
+julia:latest
+kibana:latest
+logstash:latest
+mariadb:latest
+memcached:latest
+mongo:latest
+mysql:latest
+neo4j:latest
+nginx:latest
+notary:latest
+oraclelinux:latest
+perl:latest
+postgres:latest
+pypy:latest
+rabbitmq:latest
+redis:latest
+redmine:latest
+ruby:latest
+rust:latest
+sapmachine:latest
+solr:latest
+sonarqube:latest
+storm:latest
+swipl:latest
+tomee:latest
+ubuntu:latest
+unit:latest
+varnish:latest
+vault:latest
+websphere-liberty:latest
+wordpress:latest
+xwiki:latest
+```
+
+#### office docker
+
+```
+mongo-express
+traefik
+backdrop
+consul
+chronograf
+influxdb
+kapacitor
+telegraf
+hello-seattle
+hola-mundo
+fsharp
+spiped
+vault
+clearlinux
+eggdrop
+ibmjava
+openjdk
+kong
+zookeeper
+nats-streaming
+storm
+plone
+bash
+amazonlinux
+composer
+known
+eclipse-mosquitto
+nextcloud
+silverpeas
+swift
+haxe
+rapidoid
+adminer
+geonetwork
+xwiki
+groovy
+znc
+gradle
+convertigo
+flink
+swipl
+rust
+mediawiki
+euleros
+sl
+open-liberty
+clefos
+teamspeak
+matomo
+yourls
+alt
+amazoncorretto
+express-gateway
+postfixadmin
+fluentd
+adoptopenjdk
+sapmachine
+varnish
+jobber
+archlinux
+friendica
+caddy
+monica
+phpmyadmin
+hitch
+almalinux
+dart
+eclipse-temurin
+ibm-semeru-runtimes
+rockylinux
+api-firewall
+emqx
+satosa
+unit
+spark
+centos
+busybox
+ubuntu
+fedora
+registry
+hipache
+docker-dev
+debian
+cirros
+crux
+ubuntu-upstart
+buildpack-deps
+nginx
+node
+mysql
+wordpress
+postgres
+redis
+java
+mongo
+rails
+ruby
+python
+ubuntu-debootstrap
+perl
+hello-world
+hylang
+gcc
+jenkins
+golang
+neurodebian
+clojure
+php
+jruby
+mageia
+crate
+php-zendserver
+tomcat
+mono
+haskell
+glassfish
+maven
+httpd
+sentry
+r-base
+mariadb
+thrift
+pypy
+django
+haproxy
+memcached
+rabbitmq
+oraclelinux
+odoo
+rethinkdb
+iojs
+websphere-liberty
+irssi
+swarm
+elasticsearch
+jetty
+ghost
+celery
+percona
+aerospike
+logstash
+julia
+alpine
+rakudo-star
+drupal
+cassandra
+sonarqube
+couchbase
+ros
+kibana
+kaazing-gateway
+arangodb
+owncloud
+gazebo
+joomla
+redmine
+nats
+rocket.chat
+docker
+tomee
+sourcemage
+bonita
+solr
+neo4j
+erlang
+nuxeo
+photon
+couchdb
+notary
+piwik
+elixir
+lightstreamer
+orientdb
+```
 
