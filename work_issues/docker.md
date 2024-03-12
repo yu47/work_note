@@ -166,7 +166,7 @@ docker run -it -p 127.0.0.1:80:8080 容器ID/容器NAMES /bin/bash
 
 ### 本地内网仓库搭建
 
-#### 安装skopeo
+#### 安装方式1：skopeo 
 
 ```
 SKOPEO_VERSION=v1.3.0
@@ -177,6 +177,18 @@ BUILD_IMAGE=nixos/nix:2.3.12
 docker run --rm -t -v $PWD:/build ${BUILD_IMAGE} \
 sh -c "cd /build && nix build -f nix && cp ./result/bin/skopeo skopeo"
 ```
+
+#### 安装方式2：skopeo 
+
+```
+git clone https://github.com/containers/skopeo.git
+cd skopeo
+
+安装 go 最新版
+make bin/skopeo
+```
+
+
 
 #### 安装harbor
 
@@ -245,5 +257,24 @@ sudo ./skopeo  copy  docker://{DOCKER_NAME}:latest --dest-creds=admin:Harbor1234
 
 ```
 ./skopeo inspect --tls-verify=false  docker://127.0.0.1:8808/library/adminer:latest --raw | jq '.'
+```
+
+
+
+#### copy脚本
+
+```
+
+```
+
+
+
+#### harbor更换http为https
+
+```
+修改 harbor.yml 中的https  证书
+执行 ./pre
+docker-compose down
+docker-compose up -d
 ```
 
