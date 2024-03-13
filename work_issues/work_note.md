@@ -1803,9 +1803,9 @@ int main(int argc, char const *argv[])
 
   
 #### apt-mirror 2017停止更新
-  
+
 ​	需要手动下载icons
-  
+
   ```
 cd /data/ubuntu/mirror/mirrors.aliyun.com/ubuntu/dists/
   dists="*"
@@ -1818,16 +1818,16 @@ for dist in ${dists}; do
   done
   
   ```
+
   
-  
-  
+
   #### 搭建访问
-  
+
   * sudo apt install apache2
   * ln –s /home/xxx/xxx/mirror/mirrors.aliyun.com/Ubuntu /var/www/html/Ubuntu
-  
+
   #### 需要访问的用户
-  
+
   * 修改镜像源
   
     ```
@@ -1839,7 +1839,7 @@ for dist in ${dists}; do
     ```
     
     
-  
+
 
 ```
 {
@@ -2082,5 +2082,14 @@ piwik
 elixir
 lightstreamer
 orientdb
+```
+
+### 根据名字kill 进程
+
+```
+ ( ps aux | grep "proccess_name" | grep -v 'grep' | awk '{print $2}' ) | xargs kill -9
+ 
+ #查找涉及某端口的进程可以用这条命令(以80端口为例): 
+ netstat -A | grep -E "(\.((2(5[0-5]|[0-4][0-9]))|[0-1]?[0-9]{1,2})){3}\.80" | awk '{print $1}' > tmpfile; fstat | grep -f tmpfile; rm tmpfile
 ```
 

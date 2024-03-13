@@ -23,3 +23,19 @@ print(decoded_string)
 
 ```
 
+
+
+##### 本地源
+
+```
+pip2pi ./pypi_packages -r request.txt
+
+dir2pi ./pypi_packages   //生产simple
+
+#搭建web
+python -m http.server 8080 --bind your_machine_ip --directory /path/to/pypi_packages/simple
+
+# 添加对搜索IP的信任，否则会install失败
+pip config set install.trusted-host 168.163.1.1
+```
+
