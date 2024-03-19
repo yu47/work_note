@@ -2086,10 +2086,16 @@ orientdb
 
 ### 根据名字kill 进程
 
-```
+```shell
  ( ps aux | grep "proccess_name" | grep -v 'grep' | awk '{print $2}' ) | xargs kill -9
  
  #查找涉及某端口的进程可以用这条命令(以80端口为例): 
  netstat -A | grep -E "(\.((2(5[0-5]|[0-4][0-9]))|[0-1]?[0-9]{1,2})){3}\.80" | awk '{print $1}' > tmpfile; fstat | grep -f tmpfile; rm tmpfile
+```
+
+### 回调函数
+
+```c
+typedef void *(*read_message)(unsigned char* data, unsigned int len, void* args);
 ```
 

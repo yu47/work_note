@@ -278,3 +278,31 @@ docker-compose down
 docker-compose up -d
 ```
 
+
+
+账号：junqi24368hpl@163.com 密码：ling70639
+
+
+
+### docker hub 账号
+
+```
+junqi24368hpl
+junqi2@1634368hpl
+
+junqi24368hpl:junqi2@1634368hpl
+
+github action bot
+githubactions
+3d6472b9-3d49-4d17-9fc9-90d24258043b
+
+githubactions:3d6472b9-3d49-4d17-9fc9-90d24258043b
+```
+
+#### 查看限制次数
+
+```
+TOKEN=$(curl --user 'username:password' "https://auth.docker.io/token?service=registry.docker.io&scope=repository:ratelimitpreview/test:pull" | jq -r .token)
+curl --head -H "Authorization: Bearer $TOKEN" https://registry-1.docker.io/v2/ratelimitpreview/test/manifests/latest
+
+```
