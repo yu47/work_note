@@ -2099,3 +2099,10 @@ orientdb
 typedef void *(*read_message)(unsigned char* data, unsigned int len, void* args);
 ```
 
+### vmware进入boot
+
+```
+虚拟机目录  在.vmx  最上面加
+bios.forceSetupOnce = "TRUE"
+```
+
