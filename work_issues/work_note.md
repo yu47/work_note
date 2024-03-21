@@ -2106,3 +2106,9 @@ typedef void *(*read_message)(unsigned char* data, unsigned int len, void* args)
 bios.forceSetupOnce = "TRUE"
 ```
 
+资料文档
+
+```
+https://binhack.readthedocs.io/zh/latest/index.html
+```
+

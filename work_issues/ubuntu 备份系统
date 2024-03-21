@@ -1,0 +1,35 @@
+### ubuntu 备份系统
+
+```
+cd /
+tar -cvpzf ubuntu_backup.tgz –exclude=/proc –exclude=/lost+found exclude=/mnt –exclude=/sys  –exclude=/ubuntu_backup.tgz
+```
+
+### 还原系统 (用分区的系统进行还原)
+
+```
+rm -rf ubuntu系统根目录下的 bin dev etc home lib media opt root sbin srv usr var 
+sudo tar -xvpzf ./ubuntu_back.tar.gz -C 根目录
+mkdir proc sys mnt lost+found
+```
+
+
+
+### 把alpine 装到U盘或者其他分区
+
+```
+dd if=alpine.iso of=/dev/xxx
+```
+
+
+
+### vmware进入bios选择系统
+
+```
+修改虚拟机目录下的vmx文件 头部添加：
+bios.forceSetupOnce = "TRUE"
+```
+
+ 
+
+mkfs.ext4
