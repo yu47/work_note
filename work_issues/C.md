@@ -811,3 +811,9 @@ gcc test.c -shared -fPIC -o test.so
     
 ```
 
+### inet_ntoa 报错inet_ntoa ./sysdeps/x86_64/multiarch/strcpy-avx2.S: 没有那个文件或目录
+
+```
+#include <arpa/inet.h> 添加头文件
+```
+
