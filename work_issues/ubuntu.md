@@ -193,3 +193,12 @@ message Student
 
 
 
+
+
+### 自动补全依赖
+
+```
+sudo apt install aptitude
+aptitude install xxx
+```
+
