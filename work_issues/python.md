@@ -96,3 +96,12 @@ keyboard.wait('ctrl+alt+q')
 
 ```
 
+linux service自启动 设置xhost 失败。解决办法： unable to open display ":0"
+
+```
+sed -i '$a xhost +SI:localuser:root' /etc/profile
+source /etc/profile
+```
+
+
+
